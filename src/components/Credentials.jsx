@@ -23,8 +23,8 @@ function Credentials() {
                 }
             });
 
-            setCredentials(response.data);
-
+console.log("API Response:", response.data);
+setCredentials(response.data);
         } catch (error) {
 
             console.log(error);

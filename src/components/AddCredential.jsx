@@ -10,12 +10,12 @@ function AddCredential() {
     const [loading, setLoading] = useState(false);
     const [strength, setStrength] = useState("");
     const [credential, setCredential] = useState({
-        website: "",
-        username: "",
-        password: "",
-        notes: ""
-    });
-
+    website: "",
+    username: "",
+    password: "",
+    notes: "",
+    category: "OTHER"
+});
     const handleChange = (e) => {
 
     const { name, value } = e.target;
@@ -99,11 +99,12 @@ const generatePassword = () => {
         toast.success("Password saved successfully!");
 
         setCredential({
-            website: "",
-            username: "",
-            password: "",
-            notes: ""
-        });
+    website: "",
+    username: "",
+    password: "",
+    notes: "",
+    category: "OTHER"
+});
 
         setTimeout(() => {
             navigate("/credentials");
@@ -152,6 +153,37 @@ const generatePassword = () => {
                         required
                     />
 
+<select
+    name="category"
+    value={credential.category}
+    onChange={handleChange}
+>
+
+    <option value="OTHER">
+        📂 Other
+    </option>
+
+    <option value="EMAIL">
+        📧 Email
+    </option>
+
+    <option value="SOCIAL_MEDIA">
+        📱 Social Media
+    </option>
+
+    <option value="BANKING">
+        🏦 Banking
+    </option>
+
+    <option value="SHOPPING">
+        🛒 Shopping
+    </option>
+
+    <option value="WORK">
+        💼 Work
+    </option>
+
+</select>
                     <div className="password-field">
 
     <input
