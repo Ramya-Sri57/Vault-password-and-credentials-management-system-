@@ -1,0 +1,162 @@
+body{
+    margin:0;
+    background:#f8fafc;
+    font-family:Inter,"Segoe UI",Arial,sans-serif;
+}
+
+/* Page */
+
+.profile-page{
+
+    min-height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:40px;
+
+}
+
+/* Card */
+
+.profile-card{
+
+    width:100%;
+    max-width:500px;
+
+    background:#ffffff;
+
+    border-radius:22px;
+
+    padding:40px;
+
+    box-shadow:0 10px 35px rgba(15,23,42,.08);
+
+    text-align:center;
+
+}
+
+/* Avatar */
+
+.profile-avatar{
+
+    width:100px;
+
+    height:100px;
+
+    margin:auto;
+
+    margin-bottom:25px;
+
+    border-radius:50%;
+
+    background:#eff6ff;
+
+    color:#2563eb;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:48px;
+
+    font-weight:bold;
+
+}
+
+.profile-card h2{
+
+    margin:0;
+
+    color:#0f172a;
+
+}
+
+.profile-card p{
+
+    color:#64748b;
+
+    margin-top:10px;
+
+}
+
+/* Info */
+
+.profile-info{
+
+    margin:35px 0;
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:20px;
+
+}
+
+.profile-info div{
+
+    background:#f8fafc;
+
+    border:1px solid #e2e8f0;
+
+    border-radius:14px;
+
+    padding:18px;
+
+}
+
+.profile-info strong{
+
+    display:block;
+
+    color:#0f172a;
+
+    margin-bottom:8px;
+
+}
+
+.profile-info span{
+
+    color:#64748b;
+
+}
+
+/* Buttons */
+
+.profile-card button{
+
+    width:100%;
+
+    padding:14px;
+
+    margin-top:15px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:#0f172a;
+
+    color:white;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+.profile-card button:hover{
+
+    background:#1e293b;
+
+}

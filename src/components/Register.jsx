@@ -1,6 +1,6 @@
 import { useState } from "react";
 import API from "../api/axiosConfig";
-import "../styles/auth.css";
+import "../css/Auth.css";
 import { Link } from "react-router-dom";
 function Register() {
     const [user, setUser] = useState({

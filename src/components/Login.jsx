@@ -1,18 +1,20 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import API from "../api/axiosConfig";
-import "../styles/auth.css";
-
+import "../css/Auth.css";
+import toast from "react-hot-toast";
 function Login() {
+    const navigate = useNavigate();
+
     const [user, setUser] = useState({
         email: "",
         password: ""
     });
 
     const [loading, setLoading] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
+    
 
     const handleChange = (e) => {
         setUser({
@@ -36,14 +38,13 @@ function Login() {
 
             console.log("Login response:", response.data);
 
-            localStorage.setItem("token", response.data.token);
+           localStorage.setItem("token", response.data.token);
 
-            setSuccess("Login successful! Welcome back.");
+toast.success("Login successful!");
 
-            setUser({
-                email: "",
-                password: ""
-            });
+setTimeout(() => {
+    navigate("/dashboard");
+}, 1000);
 
         } catch (error) {
             console.error("Login error:", error);
@@ -102,39 +103,19 @@ function Login() {
                     </div>
 
                     <div className="form-group">
-                        <label>Password</label>
 
-                        <div className="password-wrapper">
+    <label>Password</label>
 
-                            <input
-                                type={
-                                    showPassword
-                                        ? "text"
-                                        : "password"
-                                }
-                                name="password"
-                                placeholder="Enter your password"
-                                value={user.password}
-                                onChange={handleChange}
-                                required
-                            />
+    <input
+        type="password"
+        name="password"
+        placeholder="Enter your password"
+        value={user.password}
+        onChange={handleChange}
+        required
+    />
 
-                            <button
-                                type="button"
-                                className="password-toggle"
-                                onClick={() =>
-                                    setShowPassword(
-                                        !showPassword
-                                    )
-                                }
-                            >
-                                {showPassword
-                                    ? "Hide"
-                                    : "Show"}
-                            </button>
-
-                        </div>
-                    </div>
+</div>
 
                     {error && (
                         <div className="error-message">
@@ -157,6 +138,15 @@ function Login() {
                             ? "Signing in..."
                             : "Login"}
                     </button>
+                    <div className="forgot-link">
+
+    <Link to="/forgot-password">
+
+        Forgot Password?
+
+    </Link>
+
+</div>
 
                 </form>
 
