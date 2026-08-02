@@ -8,6 +8,5 @@ import java.util.List;
 
 public interface CredentialRepository extends JpaRepository<Credential, Long> {
 
-    List<Credential> findByUser(User user);
-
+    List<Credential> findByUserId(Long userId);
 }

@@ -15,4 +15,6 @@ public class CredentialRequest {
 
     private String notes;
 
+    private String category;
+
 }
