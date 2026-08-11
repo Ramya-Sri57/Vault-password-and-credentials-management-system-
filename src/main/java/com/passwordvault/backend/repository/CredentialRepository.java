@@ -9,4 +9,7 @@ import java.util.List;
 public interface CredentialRepository extends JpaRepository<Credential, Long> {
 
     List<Credential> findByUserId(Long userId);
+    long countByUser(User user);
+
+long countByUserAndCategoryIsNotNull(User user);
 }

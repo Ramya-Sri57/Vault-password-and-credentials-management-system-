@@ -2,7 +2,7 @@ package com.passwordvault.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
+import java.time.LocalDate;
 @Entity
 @Getter
 @Setter
@@ -24,7 +24,7 @@ public class Credential {
     private String notes;
 
     private String category;
-
+    private LocalDate expiryDate;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

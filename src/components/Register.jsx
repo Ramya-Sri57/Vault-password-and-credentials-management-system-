@@ -2,6 +2,7 @@ import { useState } from "react";
 import API from "../api/axiosConfig";
 import "../css/Auth.css";
 import { Link } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 function Register() {
     const [user, setUser] = useState({
         fullName: "",
@@ -136,18 +137,18 @@ function Register() {
                             />
 
                             <button
-                                type="button"
-                                className="password-toggle"
-                                onClick={() =>
-                                    setShowPassword(
-                                        !showPassword
-                                    )
-                                }
-                            >
-                                {showPassword
-                                    ? "Hide"
-                                    : "Show"}
-                            </button>
+    type="button"
+    className="password-toggle"
+    onClick={() =>
+        setShowPassword(!showPassword)
+    }
+>
+    {showPassword ? (
+        <EyeOff size={20} />
+    ) : (
+        <Eye size={20} />
+    )}
+</button>
 
                         </div>
                     </div>

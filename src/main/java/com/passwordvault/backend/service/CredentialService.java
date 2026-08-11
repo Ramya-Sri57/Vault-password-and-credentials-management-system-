@@ -12,7 +12,9 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
-
+import com.passwordvault.backend.dto.DashboardStatsResponse;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -185,12 +187,13 @@ public class CredentialService {
         credential.setNotes(
                 updatedCredential.getNotes()
         );
-        credential.setCategory(
-        updatedCredential.getCategory()
+       credential.setCategory(
+    updatedCredential.getCategory()
 );
 
-
-
+credential.setExpiryDate(
+    updatedCredential.getExpiryDate()
+);
         credentialRepository.save(credential);
 
 
@@ -200,5 +203,49 @@ public class CredentialService {
         );
 
     }
+
+    public DashboardStatsResponse getDashboardStats(User user) {
+
+    List<Credential> credentials =
+            credentialRepository.findByUserId(user.getId());
+
+    int strongPasswords = 0;
+    int weakPasswords = 0;
+
+    Set<String> categories = new HashSet<>();
+
+    for (Credential credential : credentials) {
+
+        if (credential.getCategory() != null &&
+                !credential.getCategory().isBlank()) {
+
+            categories.add(credential.getCategory());
+        }
+
+        String password = encryptionService.decrypt(
+                credential.getPassword()
+        );
+
+        if (password.length() >= 8 &&
+                password.matches(".*[A-Z].*") &&
+                password.matches(".*[a-z].*") &&
+                password.matches(".*\\d.*") &&
+                password.matches(".*[@$!%*?&#].*")) {
+
+            strongPasswords++;
+
+        } else {
+
+            weakPasswords++;
+        }
+    }
+
+    return new DashboardStatsResponse(
+            credentials.size(),
+            categories.size(),
+            strongPasswords,
+            weakPasswords
+    );
+}
 
 }

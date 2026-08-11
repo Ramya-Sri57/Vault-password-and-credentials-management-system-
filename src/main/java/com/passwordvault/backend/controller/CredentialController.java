@@ -1,5 +1,5 @@
 package com.passwordvault.backend.controller;
-
+import com.passwordvault.backend.dto.DashboardStatsResponse;
 import com.passwordvault.backend.entity.Credential;
 import com.passwordvault.backend.entity.User;
 import com.passwordvault.backend.service.CredentialService;
@@ -40,6 +40,16 @@ public class CredentialController {
 
         return credentialService.getAll(user);
 
+    }
+
+        @GetMapping("/dashboard-stats")
+    public DashboardStatsResponse getDashboardStats(
+            Authentication authentication
+    ) {
+
+        User user = (User) authentication.getPrincipal();
+
+        return credentialService.getDashboardStats(user);
     }
     @GetMapping("/{id}")
 public ResponseEntity<?> getCredentialById(

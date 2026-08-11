@@ -10,12 +10,13 @@ function AddCredential() {
     const [loading, setLoading] = useState(false);
     const [strength, setStrength] = useState("");
     const [credential, setCredential] = useState({
-        website: "",
-        username: "",
-        password: "",
-        notes: ""
-    });
-
+    website: "",
+    username: "",
+    password: "",
+    category: "",
+    expiryDate: "",
+    notes: ""
+});
     const handleChange = (e) => {
 
     const { name, value } = e.target;
@@ -180,6 +181,14 @@ const generatePassword = () => {
     </p>
 )}
 
+<label>Password Expiry</label>
+
+<input
+    type="date"
+    name="expiryDate"
+    value={credential.expiryDate}
+    onChange={handleChange}
+/>
                     <textarea
                         name="notes"
                         placeholder="Notes"
@@ -203,6 +212,7 @@ const generatePassword = () => {
             </div>
 
         </div>
+
 
     );
 
