@@ -8,11 +8,17 @@ function Dashboard() {
 
 const [profile, setProfile] = useState(null);
 const [credentials, setCredentials] = useState([]);
-
+const [stats, setStats] = useState({
+    totalPasswords: 0,
+    totalCategories: 0,
+    strongPasswords: 0,
+    weakPasswords: 0
+});
 useEffect(() => {
 
     fetchProfile();
     fetchCredentials();
+    fetchDashboardStats();
 
 }, []);
 
@@ -48,6 +54,21 @@ const fetchCredentials = async () => {
 
 };
 
+const fetchDashboardStats = async () => {
+
+    try {
+
+        const response = await API.get("/credentials/dashboard-stats");
+
+        setStats(response.data);
+
+    } catch (error) {
+
+        console.log(error);
+
+    }
+
+};
 const totalPasswords = credentials.length;
 
 const totalWebsites = new Set(
@@ -55,75 +76,187 @@ const totalWebsites = new Set(
 ).size;
     return (
 
-        <div className="dashboard">
+<div className="dashboard">
 
-            <aside className="sidebar">
+    <main className="dashboard-content">
 
-                <h2>🔐 Password Vault</h2>
+        {/* Top Navigation */}
 
-                <nav>
+        <header className="top-navbar">
 
-                    <Link to="/dashboard">🏠 Dashboard</Link>
+            <div className="logo">
+                🔐 <span>Password Vault</span>
+            </div>
 
-                    <Link to="/profile">👤 Profile</Link>
+            <nav className="nav-links">
 
-                    <Link to="/credentials">🔑 My Passwords</Link>
+    <Link to="/profile" className="nav-btn">
+        👤 Profile
+    </Link>
 
-<Link to="/add-credential">➕ Add Password</Link>
-                   <button
-    className="logout-btn"
-    onClick={() => {
-        localStorage.removeItem("token");
-        navigate("/");
-    }}
->
-    🚪 Logout
-</button>
+    <Link to="/dashboard" className="nav-btn active">
+        📊 Dashboard
+    </Link>
 
-                </nav>
+    <Link to="/add-credential" className="nav-btn">
+        ➕ Add Password
+    </Link>
 
-            </aside>
+    <Link to="/credentials" className="nav-btn">
+        🔑 My Passwords
+    </Link>
 
-            <main className="content">
+    <Link to="/shared-with-me" className="nav-btn">
+        📥 Shared With Me
+    </Link>
+   
+    <Link to="/shared-by-me" className="nav-btn">
+    📤 Shared By Me
+</Link>
+</nav>
+            <button
+                className="logout-button"
+                onClick={() => {
 
-               <h1>
-    Welcome, {profile?.fullName || "User"} 👋
-</h1>
+                    localStorage.removeItem("token");
+                    navigate("/");
+
+                }}
+            >
+              Logout
+            </button>
+
+        </header>
+
+        {/* Welcome Banner */}
+
+        <section className="welcome-card">
+
+            <div>
+
+                <h1>
+                    Welcome back, {profile?.fullName || "User"} 👋
+                </h1>
 
                 <p>
-                    Manage all your passwords securely from one place.
+                    Manage your passwords securely and keep your digital life safe.
                 </p>
 
-               <div className="cards">
+            </div>
 
-    <div className="card">
-        <h3>{totalPasswords}</h3>
-        <p>Saved Passwords</p>
-    </div>
+            <div className="welcome-image">
 
-    <div className="card">
-        <h3>{totalWebsites}</h3>
-        <p>Websites Saved</p>
-    </div>
+                🔐🛡️
 
-    <div className="card">
-        <h3>Protected</h3>
-        <p>JWT Secured</p>
-    </div>
+            </div>
 
-    <div className="card">
-        <h3>{profile?.fullName || "-"}</h3>
-        <p>Account Owner</p>
-    </div>
+        </section>
+
+        {/* Statistics */}
+
+        <section className="cards">
+
+            <div className="card">
+
+                <h2>🔐</h2>
+
+                <h3>{stats.totalPasswords}</h3>
+
+                <p>Total Passwords</p>
+
+            </div>
+
+            <div className="card">
+
+                <h2>📁</h2>
+
+                <h3>{stats.totalCategories}</h3>
+
+                <p>Categories</p>
+
+            </div>
+
+            <div className="card">
+
+                <h2>🛡️</h2>
+
+                <h3>{stats.strongPasswords}</h3>
+
+                <p>Strong Passwords</p>
+
+            </div>
+
+            <div className="card">
+
+                <h2>⚠️</h2>
+
+                <h3>{stats.weakPasswords}</h3>
+
+                <p>Weak Passwords</p>
+
+            </div>
+
+        </section>
+
+        {/* Recent Passwords */}
+
+        <section className="recent-section">
+
+            <div className="section-header">
+
+                <h2>Recent Passwords</h2>
+
+                <Link to="/credentials" className="view-all">
+
+                    View All →
+
+                </Link>
+
+            </div>
+
+            <div className="recent-list">
+
+                {credentials.slice(0,5).map((item) => (
+
+                    <div className="recent-item" key={item.id}>
+
+                        <div>
+
+                            <h4>{item.website}</h4>
+
+                            <p>{item.username}</p>
+
+                        </div>
+
+                        <span className="category-badge">
+
+                            {item.category || "General"}
+
+                        </span>
+
+                    </div>
+
+                ))}
+
+            </div>
+
+        </section>
+
+        {/* Security Tip */}
+
+        <section className="security-tip">
+
+            🛡️ <strong>Security Tip:</strong> Use unique passwords for every account and enable two-factor authentication whenever possible.
+
+        </section>
+
+    </main>
 
 </div>
 
-            </main>
-
-        </div>
-
-    );
+);
 
 }
 
 export default Dashboard;
+

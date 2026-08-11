@@ -136,12 +136,10 @@ function Register() {
                                 required
                             />
 
-                            <button
+<button
     type="button"
     className="password-toggle"
-    onClick={() =>
-        setShowPassword(!showPassword)
-    }
+    onClick={() => setShowPassword(!showPassword)}
 >
     {showPassword ? (
         <EyeOff size={20} />
@@ -149,6 +147,7 @@ function Register() {
         <Eye size={20} />
     )}
 </button>
+
 
                         </div>
                     </div>

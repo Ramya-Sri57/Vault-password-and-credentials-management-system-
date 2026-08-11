@@ -17,41 +17,30 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import org.springframework.web.cors.CorsConfigurationSource;
 
-
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
-
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     private final CorsConfigurationSource corsConfigurationSource;
 
-
-
     @Bean
     PasswordEncoder passwordEncoder() {
-
         return new BCryptPasswordEncoder();
-
     }
-
-
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-
         http
-            .cors(cors -> 
+            .cors(cors ->
                 cors.configurationSource(corsConfigurationSource)
             )
 
             .csrf(csrf -> csrf.disable())
 
-
             .authorizeHttpRequests(auth -> auth
-
 
                 // Allow browser CORS preflight
                 .requestMatchers(
@@ -59,33 +48,28 @@ public class SecurityConfig {
                 )
                 .permitAll()
 
-
                 // Public authentication APIs
                 .requestMatchers("/api/auth/**")
                 .permitAll()
 
-
                 // Protected APIs
                 .anyRequest()
                 .authenticated()
-
             )
 
-
+            // JWT-based authentication is stateless
             .sessionManagement(session ->
                 session.sessionCreationPolicy(
                     SessionCreationPolicy.STATELESS
                 )
             );
 
-
+        // Add JWT filter before Spring Security's username/password filter
         http.addFilterBefore(
             jwtAuthenticationFilter,
             UsernamePasswordAuthenticationFilter.class
         );
 
-
         return http.build();
     }
-
 }

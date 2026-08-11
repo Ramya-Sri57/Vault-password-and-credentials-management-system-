@@ -5,129 +5,125 @@ import "../css/AddCredential.css";
 import toast from "react-hot-toast";
 
 function AddCredential() {
-
     const navigate = useNavigate();
+
     const [loading, setLoading] = useState(false);
     const [strength, setStrength] = useState("");
+
     const [credential, setCredential] = useState({
-    website: "",
-    username: "",
-    password: "",
-    category: "OTHER",
-    expiryDate: "",
-    notes: ""
-});
+        website: "",
+        username: "",
+        password: "",
+        category: "OTHER",
+        expiryDate: "",
+        notes: ""
+    });
+
     const handleChange = (e) => {
-
-    const { name, value } = e.target;
-
-    setCredential({
-        ...credential,
-        [name]: value
-    });
-
-    if (name === "password") {
-        setStrength(checkStrength(value));
-    }
-
-};
-
-    const checkStrength = (password) => {
-
-    if (password.length < 6) {
-        return "Weak";
-    }
-
-    const hasUpper = /[A-Z]/.test(password);
-    const hasLower = /[a-z]/.test(password);
-    const hasNumber = /\d/.test(password);
-    const hasSpecial = /[@$!%*?&#]/.test(password);
-
-    const score = [hasUpper, hasLower, hasNumber, hasSpecial]
-        .filter(Boolean).length;
-
-    if (score <= 2) {
-        return "Medium";
-    }
-
-    return "Strong";
-
-};
-
-const generatePassword = () => {
-
-    const chars =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+";
-
-    let password = "";
-
-    for (let i = 0; i < 16; i++) {
-
-        password += chars.charAt(
-            Math.floor(Math.random() * chars.length)
-        );
-
-    }
-
-    setCredential({
-        ...credential,
-        password
-    });
-
-    setStrength(checkStrength(password));
-
-    toast.success("Strong password generated!");
-
-};
-    const saveCredential = async (e) => {
-
-    e.preventDefault();
-
-    setLoading(true);
-
-    try {
-
-        await API.post(
-            "/credentials",
-            credential,
-            {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`
-                }
-            }
-        );
-
-        toast.success("Password saved successfully!");
+        const { name, value } = e.target;
 
         setCredential({
-    website: "",
-    username: "",
-    password: "",
-    notes: "",
-    category: "OTHER"
-});
+            ...credential,
+            [name]: value
+        });
 
-        setTimeout(() => {
-            navigate("/credentials");
-        }, 1000);
+        if (name === "password") {
+            setStrength(checkStrength(value));
+        }
+    };
 
-    } catch (error) {
+    const checkStrength = (password) => {
+        if (password.length < 6) {
+            return "Weak";
+        }
 
-        console.log(error);
+        const hasUpper = /[A-Z]/.test(password);
+        const hasLower = /[a-z]/.test(password);
+        const hasNumber = /\d/.test(password);
+        const hasSpecial = /[@$!%*?&#]/.test(password);
 
-        toast.error(
-            error.response?.data || "Unable to save password."
-        );
+        const score = [
+            hasUpper,
+            hasLower,
+            hasNumber,
+            hasSpecial
+        ].filter(Boolean).length;
 
-    } finally {
+        if (score <= 2) {
+            return "Medium";
+        }
 
-        setLoading(false);
+        return "Strong";
+    };
 
-    }
+    const generatePassword = () => {
+        const chars =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+";
 
-};
+        let password = "";
+
+        for (let i = 0; i < 16; i++) {
+            password += chars.charAt(
+                Math.floor(Math.random() * chars.length)
+            );
+        }
+
+        setCredential({
+            ...credential,
+            password
+        });
+
+        setStrength(checkStrength(password));
+
+        toast.success("Strong password generated!");
+    };
+
+    const saveCredential = async (e) => {
+        e.preventDefault();
+
+        setLoading(true);
+
+        try {
+            await API.post(
+                "/credentials",
+                credential,
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                }
+            );
+
+            toast.success("Password saved successfully!");
+
+            setCredential({
+                website: "",
+                username: "",
+                password: "",
+                category: "OTHER",
+                expiryDate: "",
+                notes: ""
+            });
+
+            setStrength("");
+
+            setTimeout(() => {
+                navigate("/credentials");
+            }, 1000);
+
+        } catch (error) {
+            console.log(error);
+
+            toast.error(
+                error.response?.data || "Unable to save password."
+            );
+
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
-
         <div className="add-page">
 
             <div className="add-card">
@@ -136,118 +132,167 @@ const generatePassword = () => {
 
                 <form onSubmit={saveCredential}>
 
-                    <input
-                        type="text"
-                        name="website"
-                        placeholder="Website"
-                        value={credential.website}
-                        onChange={handleChange}
-                        required
-                    />
+                    <div className="form-group">
+                        <label>Website</label>
 
-                    <input
-                        type="text"
-                        name="username"
-                        placeholder="Username / Email"
-                        value={credential.username}
-                        onChange={handleChange}
-                        required
-                    />
+                        <input
+                            type="text"
+                            name="website"
+                            placeholder="Enter website"
+                            value={credential.website}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
 
-<select
-    name="category"
-    value={credential.category}
-    onChange={handleChange}
->
 
-    <option value="OTHER">
-        📂 Other
-    </option>
+                    <div className="form-group">
+                        <label>Username / Email</label>
 
-    <option value="EMAIL">
-        📧 Email
-    </option>
+                        <input
+                            type="text"
+                            name="username"
+                            placeholder="Enter username or email"
+                            value={credential.username}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
 
-    <option value="SOCIAL_MEDIA">
-        📱 Social Media
-    </option>
 
-    <option value="BANKING">
-        🏦 Banking
-    </option>
+                    <div className="form-group">
 
-    <option value="SHOPPING">
-        🛒 Shopping
-    </option>
+                        <label>Category</label>
 
-    <option value="WORK">
-        💼 Work
-    </option>
+                        <select
+                            name="category"
+                            value={credential.category}
+                            onChange={handleChange}
+                        >
+                            <option value="SHOPPING">
+                                🛒 Shopping
+                            </option>
 
-</select>
-                    <div className="password-field">
+                            <option value="EMAIL">
+                                📧 Email
+                            </option>
 
-    <input
-        type="text"
-        name="password"
-        placeholder="Password"
-        value={credential.password}
-        onChange={handleChange}
-        required
-    />
+                            <option value="WORK">
+                                💼 Work
+                            </option>
 
-    <button
-        type="button"
-        className="generate-btn"
-        onClick={generatePassword}
-    >
-        🎲 Generate
-    </button>
+                            <option value="BANKING">
+                                🏦 Banking
+                            </option>
 
-</div>
-                    {credential.password && (
-    <p
-        className={`password-strength ${strength.toLowerCase()}`}
-    >
-        Strength: {strength}
-    </p>
-)}
+                            <option value="SOCIAL_MEDIA">
+                                📱 Social Media
+                            </option>
 
-<label>Password Expiry</label>
+                            <option value="ENTERTAINMENT">
+                                🎬 Entertainment
+                            </option>
 
-<input
-    type="date"
-    name="expiryDate"
-    value={credential.expiryDate}
-    onChange={handleChange}
-/>
-                    <textarea
-                        name="notes"
-                        placeholder="Notes"
-                        rows="4"
-                        value={credential.notes}
-                        onChange={handleChange}
-                    />
+                            <option value="EDUCATION">
+                                🎓 Education
+                            </option>
+
+                            <option value="FINANCE">
+                                💰 Finance
+                            </option>
+
+                            <option value="PERSONAL">
+                                👤 Personal
+                            </option>
+
+                            <option value="OTHER">
+                                📂 Other
+                            </option>
+                        </select>
+
+                    </div>
+
+
+                    <div className="form-group">
+
+                        <label>Password</label>
+
+                        <div className="password-field">
+
+                            <input
+                                type="text"
+                                name="password"
+                                placeholder="Enter password"
+                                value={credential.password}
+                                onChange={handleChange}
+                                required
+                            />
+
+                            <button
+                                type="button"
+                                className="generate-btn"
+                                onClick={generatePassword}
+                            >
+                                🎲 Generate
+                            </button>
+
+                        </div>
+
+
+                        {credential.password && (
+                            <p
+                                className={`password-strength ${strength.toLowerCase()}`}
+                            >
+                                Strength: {strength}
+                            </p>
+                        )}
+
+                    </div>
+
+
+                    <div className="form-group">
+
+                        <label>Password Expiry</label>
+
+                        <input
+                            type="date"
+                            name="expiryDate"
+                            value={credential.expiryDate}
+                            onChange={handleChange}
+                        />
+
+                    </div>
+
+
+                    <div className="form-group">
+
+                        <label>Notes</label>
+
+                        <textarea
+                            name="notes"
+                            placeholder="Additional notes (optional)"
+                            value={credential.notes}
+                            onChange={handleChange}
+                        />
+
+                    </div>
+
 
                     <button
-    type="submit"
-    disabled={loading}
->
-    {
-        loading
-            ? "Saving..."
-            : "Save Password"
-    }
-</button>
+                        type="submit"
+                        disabled={loading}
+                    >
+                        {loading
+                            ? "Saving..."
+                            : "💾 Save Password"}
+                    </button>
+
                 </form>
 
             </div>
 
         </div>
-
-
     );
-
 }
 
 export default AddCredential;

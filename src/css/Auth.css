@@ -259,53 +259,7 @@ color:#334155;
 
 }
 
-/* ============================
-   Password Field
-============================= */
 
-.password-wrapper{
-
-    position:relative;
-
-}
-
-.password-wrapper input{
-
-    padding-right:72px;
-
-}
-
-.password-toggle{
-
-    position:absolute;
-
-    top:50%;
-
-    right:14px;
-
-    transform:translateY(-50%);
-
-    background:none;
-
-    border:none;
-
-    color:#475569;
-
-    font-size:13px;
-
-    font-weight:600;
-
-    cursor:pointer;
-
-    transition:.2s;
-
-}
-
-.password-toggle:hover{
-
-    color:#0f172a;
-
-}
 
 /* ============================
    Primary Button
@@ -872,5 +826,51 @@ color:#334155;
     margin:15px 0;
     text-align:center;
     font-weight:600;
+
+}
+
+
+.password-toggle{
+
+    position:absolute;
+
+    right:16px;
+
+    top:50%;
+
+    transform:translateY(-50%);
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    width:24px;
+
+    height:24px;
+
+    cursor:pointer;
+
+    color:#64748b;
+
+    z-index:10;
+
+}
+
+.password-toggle:hover{
+
+    color:#2563eb;
+
+}
+.password-wrapper{
+    position: relative;
+    width: 100%;
+}
+.password-wrapper input{
+
+    width:100% !important;
+    height:52px;
+    padding:14px 50px 14px 16px !important;
 
 }
