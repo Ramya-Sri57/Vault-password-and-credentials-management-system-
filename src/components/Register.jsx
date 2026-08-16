@@ -3,6 +3,7 @@ import API from "../api/axiosConfig";
 import "../css/Auth.css";
 import { Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+
 function Register() {
     const [user, setUser] = useState({
         fullName: "",
@@ -136,18 +137,24 @@ function Register() {
                                 required
                             />
 
-<button
-    type="button"
-    className="password-toggle"
-    onClick={() => setShowPassword(!showPassword)}
->
-    {showPassword ? (
-        <EyeOff size={20} />
-    ) : (
-        <Eye size={20} />
-    )}
-</button>
-
+                            <button
+                                type="button"
+                                className="password-toggle"
+                                onClick={() =>
+                                    setShowPassword(!showPassword)
+                                }
+                                aria-label={
+                                    showPassword
+                                        ? "Hide password"
+                                        : "Show password"
+                                }
+                            >
+                                {showPassword ? (
+                                    <EyeOff size={18} />
+                                ) : (
+                                    <Eye size={18} />
+                                )}
+                            </button>
 
                         </div>
                     </div>
@@ -178,15 +185,18 @@ function Register() {
 
                 <div className="auth-footer">
 
-    <span>
-        Already have an account?
-    </span>
+                    <span>
+                        Already have an account?
+                    </span>
 
-    <Link to="/login" className="link-button">
-        Login
-    </Link>
+                    <Link
+                        to="/login"
+                        className="link-button"
+                    >
+                        Login
+                    </Link>
 
-</div>
+                </div>
 
             </div>
         </div>

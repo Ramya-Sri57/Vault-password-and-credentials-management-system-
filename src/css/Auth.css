@@ -829,48 +829,64 @@ color:#334155;
 
 }
 
+/* =========================================
+   Password Show / Hide Eye Icon
+   ========================================= */
 
-.password-toggle{
-
-    position:absolute;
-
-    right:16px;
-
-    top:50%;
-
-    transform:translateY(-50%);
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    width:24px;
-
-    height:24px;
-
-    cursor:pointer;
-
-    color:#64748b;
-
-    z-index:10;
-
-}
-
-.password-toggle:hover{
-
-    color:#2563eb;
-
-}
-.password-wrapper{
+.password-wrapper {
     position: relative;
     width: 100%;
 }
-.password-wrapper input{
 
-    width:100% !important;
-    height:52px;
-    padding:14px 50px 14px 16px !important;
+.password-wrapper input {
+    width: 100%;
+    padding-right: 42px;
+}
 
+.password-wrapper .password-toggle {
+    position: absolute !important;
+    right: 10px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+
+    width: 28px !important;
+    height: 28px !important;
+
+    min-width: 28px !important;
+    min-height: 28px !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    border: none !important;
+    outline: none !important;
+    border-radius: 50% !important;
+
+    background: transparent !important;
+    color: #64748b !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    cursor: pointer !important;
+    box-shadow: none !important;
+}
+
+.password-wrapper .password-toggle:hover {
+    background: transparent !important;
+    color: #334155 !important;
+    box-shadow: none !important;
+}
+
+.password-wrapper .password-toggle:focus {
+    outline: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+.password-wrapper .password-toggle svg {
+    width: 17px !important;
+    height: 17px !important;
+    stroke-width: 2 !important;
 }

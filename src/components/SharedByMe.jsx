@@ -320,6 +320,22 @@ function SharedByMe() {
                                         </span>
 
                                     </div>
+                                    <div className="info-row">
+
+    <span className="info-label">
+        Access Level
+    </span>
+
+    <span className="info-value access-level">
+        {item.accessLevel === "VIEW"
+            ? "View"
+            : item.accessLevel === "EDIT"
+                ? "Edit"
+                : "Full Access"
+        }
+    </span>
+
+</div>
 
 
                                     {/* SHARED ON */}

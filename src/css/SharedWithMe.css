@@ -6,11 +6,8 @@
     min-height: 100vh;
     background: #f4f7fb;
     padding: 40px;
+    box-sizing: border-box;
 }
-
-/* =========================================
-   Main Container
-========================================= */
 
 .shared-container {
     max-width: 1200px;
@@ -26,6 +23,7 @@
     padding: 25px 30px;
     border-radius: 16px;
     margin-bottom: 25px;
+    border: 1px solid #e2e8f0;
     box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
 
     display: flex;
@@ -52,10 +50,7 @@
 
 .shared-grid {
     display: grid;
-
-    grid-template-columns:
-        repeat(auto-fit, minmax(320px, 1fr));
-
+    grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
     gap: 22px;
 }
 
@@ -65,41 +60,34 @@
 
 .shared-credential-card {
     background: #ffffff;
-
     border: 1px solid #e2e8f0;
-
     border-radius: 16px;
-
     padding: 24px;
 
-    box-shadow:
-        0 6px 18px rgba(15, 23, 42, 0.06);
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
 
     transition:
         transform 0.2s ease,
-        box-shadow 0.2s ease;
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
 }
 
 .shared-credential-card:hover {
     transform: translateY(-3px);
-
-    box-shadow:
-        0 12px 28px rgba(15, 23, 42, 0.10);
+    border-color: #cbd5e1;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.10);
 }
 
 /* =========================================
-   Card Top
+   Credential Top
 ========================================= */
 
 .credential-top {
     display: flex;
-
     align-items: center;
-
     gap: 14px;
 
     padding-bottom: 18px;
-
     border-bottom: 1px solid #e5e7eb;
 }
 
@@ -108,7 +96,6 @@
     height: 48px;
 
     border-radius: 12px;
-
     background: #eff6ff;
 
     display: flex;
@@ -116,23 +103,18 @@
     justify-content: center;
 
     font-size: 23px;
-
     flex-shrink: 0;
 }
 
 .credential-top h3 {
     margin: 0 0 5px;
-
     color: #1e293b;
-
     font-size: 18px;
-
     font-weight: 700;
 }
 
 .credential-top span {
     color: #64748b;
-
     font-size: 13px;
 }
 
@@ -141,38 +123,28 @@
 ========================================= */
 
 .credential-info {
-    padding: 18px 0;
+    padding: 18px 0 5px;
 }
 
 .info-row {
     display: flex;
-
     flex-direction: column;
-
     gap: 5px;
-
     margin-bottom: 15px;
 }
 
 .info-label {
     color: #64748b;
-
     font-size: 12px;
-
     font-weight: 600;
-
     text-transform: uppercase;
-
     letter-spacing: 0.5px;
 }
 
 .info-value {
     color: #1e293b;
-
     font-size: 14px;
-
     font-weight: 500;
-
     word-break: break-word;
 }
 
@@ -182,11 +154,10 @@
 
 .notes-section {
     margin-top: 5px;
-
     padding: 12px;
 
     background: #f8fafc;
-
+    border: 1px solid #eef2f7;
     border-radius: 10px;
 }
 
@@ -194,12 +165,19 @@
     margin: 6px 0 0;
 
     color: #475569;
-
     font-size: 13px;
-
     line-height: 1.5;
 
     word-break: break-word;
+}
+
+/* =========================================
+   Access Level
+========================================= */
+
+.access-level {
+    font-weight: 600;
+    color: #2563eb;
 }
 
 /* =========================================
@@ -209,39 +187,126 @@
 .shared-actions {
     display: flex;
     align-items: center;
-    justify-content: center;
+    flex-wrap: wrap;
     gap: 8px;
-    padding-top: 8px;
+
+    padding-top: 16px;
+    border-top: 1px solid #eef2f7;
 }
 
-.shared-view-btn {
-    width: 100%;
+/* Common action button */
 
-    padding: 12px 16px;
+.shared-actions button {
+    min-height: 38px;
 
-    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
 
-    border-radius: 10px;
+    padding: 9px 14px;
 
-    background: #2563eb;
+    border-radius: 8px;
 
-    color: #ffffff;
-
-    font-size: 14px;
-
+    font-size: 13px;
     font-weight: 600;
 
     cursor: pointer;
 
     transition:
         background 0.2s ease,
-        transform 0.2s ease;
+        color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
-.shared-view-btn:hover {
-    background: #1d4ed8;
+.shared-actions button:active {
+    transform: scale(0.97);
+}
 
-    transform: translateY(-1px);
+.shared-actions button svg {
+    flex-shrink: 0;
+}
+
+/* =========================================
+   View / Hide Password
+========================================= */
+
+.password-toggle-btn {
+    border: 1px solid #d6dce5;
+    background: #ffffff;
+    color: #374151;
+}
+
+.password-toggle-btn:hover {
+    background: #f3f6fa;
+    border-color: #b9c2cf;
+    color: #1f2937;
+}
+
+/* =========================================
+   Edit Button
+========================================= */
+
+.edit-btn {
+    border: 1px solid #bfdbfe;
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.edit-btn:hover {
+    background: #dbeafe;
+    border-color: #93c5fd;
+    color: #1d4ed8;
+}
+
+/* =========================================
+   Delete Button
+========================================= */
+
+.delete-btn {
+    border: 1px solid #fecaca;
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.delete-btn:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    color: #b91c1c;
+}
+
+/* =========================================
+   Manage Sharing Button
+========================================= */
+
+.manage-sharing-btn {
+    border: 1px solid #c7d2fe;
+    background: #eef2ff;
+    color: #4f46e5;
+}
+
+.manage-sharing-btn:hover {
+    background: #e0e7ff;
+    border-color: #a5b4fc;
+    color: #4338ca;
+}
+
+/* =========================================
+   Revoke Button
+========================================= */
+
+.revoke-btn {
+    border: 1px solid #fecaca;
+    background: #fff5f5;
+    color: #c62828;
+}
+
+.revoke-btn:hover {
+    background: #ffe5e5;
+    border-color: #e5a5a5;
+    color: #a61b1b;
 }
 
 /* =========================================
@@ -250,36 +315,30 @@
 
 .empty-shared {
     background: #ffffff;
-
+    border: 1px solid #e2e8f0;
     border-radius: 16px;
 
     padding: 70px 30px;
 
     text-align: center;
 
-    box-shadow:
-        0 6px 20px rgba(15, 23, 42, 0.06);
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
 }
 
 .empty-icon {
     font-size: 50px;
-
     margin-bottom: 15px;
 }
 
 .empty-shared h3 {
     margin: 0 0 8px;
-
     color: #1e293b;
-
     font-size: 21px;
 }
 
 .empty-shared p {
     margin: 0;
-
     color: #64748b;
-
     font-size: 14px;
 }
 
@@ -289,29 +348,21 @@
 
 .loading-text {
     text-align: center;
-
     color: #64748b;
-
     font-size: 15px;
 }
 
-/* =========================================
-   Loading Card
-========================================= */
-
 .shared-card {
     max-width: 500px;
-
     margin: 100px auto;
 
     background: #ffffff;
-
     padding: 40px;
 
+    border: 1px solid #e2e8f0;
     border-radius: 16px;
 
-    box-shadow:
-        0 6px 20px rgba(15, 23, 42, 0.06);
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
 }
 
 /* =========================================
@@ -320,20 +371,372 @@
 
 .shared-error {
     background: #fef2f2;
-
     border: 1px solid #fecaca;
 
     color: #b91c1c;
 
     padding: 14px 18px;
-
     border-radius: 10px;
 
     margin-bottom: 20px;
 
     font-size: 14px;
+    font-weight: 500;
+}
+
+/* =========================================
+   Modal Overlay
+========================================= */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+
+    background: rgba(15, 23, 42, 0.45);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    z-index: 1000;
+
+    backdrop-filter: blur(3px);
+}
+
+/* =========================================
+   Share / Manage Modal
+========================================= */
+
+.share-modal {
+    width: 100%;
+    max-width: 520px;
+
+    max-height: 90vh;
+    overflow-y: auto;
+
+    background: #ffffff;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+
+    padding: 28px;
+
+    box-shadow:
+        0 20px 50px rgba(15, 23, 42, 0.20);
+
+    animation: modalAppear 0.2s ease;
+}
+
+@keyframes modalAppear {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.share-modal h2 {
+    margin: 0 0 8px;
+
+    color: #0f172a;
+
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.share-modal > p {
+    margin: 0 0 22px;
+
+    color: #64748b;
+
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.share-modal > p strong {
+    color: #1e293b;
+}
+
+/* =========================================
+   Modal Headings
+========================================= */
+
+.share-modal h3 {
+    margin: 20px 0 12px;
+
+    color: #1e293b;
+
+    font-size: 15px;
+    font-weight: 700;
+}
+
+/* =========================================
+   Modal Input
+========================================= */
+
+.share-modal input {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 11px 13px;
+
+    border: 1px solid #d6dce5;
+    border-radius: 9px;
+
+    background: #ffffff;
+
+    color: #1e293b;
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.share-modal input::placeholder {
+    color: #94a3b8;
+}
+
+.share-modal input:focus {
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 3px rgba(37, 99, 235, 0.10);
+}
+
+/* =========================================
+   Modal Select
+========================================= */
+
+.share-modal select {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 11px 13px;
+
+    margin-top: 10px;
+
+    border: 1px solid #d6dce5;
+    border-radius: 9px;
+
+    background: #ffffff;
+
+    color: #1e293b;
+
+    font-size: 14px;
+
+    outline: none;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.share-modal select:focus {
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 3px rgba(37, 99, 235, 0.10);
+}
+
+/* =========================================
+   Access Users List
+========================================= */
+
+.users-access-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    max-height: 240px;
+    overflow-y: auto;
+
+    padding-right: 3px;
+}
+
+.access-user-row {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding: 13px 14px;
+
+    background: #f8fafc;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 10px;
+}
+
+.access-user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    min-width: 0;
+}
+
+.access-user-info strong {
+    color: #1e293b;
+
+    font-size: 14px;
+
+    word-break: break-word;
+}
+
+.access-user-info span {
+    color: #64748b;
+
+    font-size: 12px;
 
     font-weight: 500;
+}
+
+/* =========================================
+   Modal Divider
+========================================= */
+
+.share-modal hr {
+    border: none;
+
+    border-top: 1px solid #e5e7eb;
+
+    margin: 24px 0;
+}
+
+/* =========================================
+   Modal Buttons
+========================================= */
+
+.modal-buttons {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 22px;
+}
+
+.modal-buttons button {
+    min-width: 90px;
+
+    padding: 10px 16px;
+
+    border-radius: 9px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.modal-buttons button:active {
+    transform: scale(0.97);
+}
+
+/* =========================================
+   Cancel
+========================================= */
+
+.cancel-btn {
+    border: 1px solid #d6dce5;
+
+    background: #ffffff;
+
+    color: #475569;
+}
+
+.cancel-btn:hover {
+    background: #f8fafc;
+
+    border-color: #b9c2cf;
+
+    color: #1e293b;
+}
+
+/* =========================================
+   Confirm Share
+========================================= */
+
+.share-confirm-btn {
+    border: 1px solid #2563eb;
+
+    background: #2563eb;
+
+    color: #ffffff;
+}
+
+.share-confirm-btn:hover {
+    background: #1d4ed8;
+
+    border-color: #1d4ed8;
+}
+
+/* =========================================
+   Access Level Field
+========================================= */
+
+.access-level-field {
+    margin-top: 14px;
+}
+
+.access-level-field label {
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #475569;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+/* =========================================
+   Scrollbar
+========================================= */
+
+.users-access-list::-webkit-scrollbar,
+.share-modal::-webkit-scrollbar {
+    width: 6px;
+}
+
+.users-access-list::-webkit-scrollbar-track,
+.share-modal::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 10px;
+}
+
+.users-access-list::-webkit-scrollbar-thumb,
+.share-modal::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+.users-access-list::-webkit-scrollbar-thumb:hover,
+.share-modal::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
 }
 
 /* =========================================
@@ -358,6 +761,14 @@
         grid-template-columns: 1fr;
     }
 
+    .shared-actions {
+        justify-content: flex-start;
+    }
+
+    .share-modal {
+        padding: 22px;
+    }
+
 }
 
 @media (max-width: 480px) {
@@ -374,90 +785,31 @@
         font-size: 16px;
     }
 
-}
+    .shared-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
 
-.password-toggle-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
+    .shared-actions button {
+        width: 100%;
+    }
 
-    padding: 9px 15px;
+    .access-user-row {
+        align-items: flex-start;
+        flex-direction: column;
+    }
 
-    border: 1px solid #d6dce5;
-    border-radius: 8px;
+    .access-user-row .revoke-btn,
+    .access-user-row .delete-btn {
+        width: 100%;
+    }
 
-    background: #ffffff;
-    color: #374151;
+    .modal-buttons {
+        flex-direction: column-reverse;
+    }
 
-    font-size: 14px;
-    font-weight: 600;
+    .modal-buttons button {
+        width: 100%;
+    }
 
-    cursor: pointer;
-
-    transition:
-        background 0.2s ease,
-        color 0.2s ease,
-        border-color 0.2s ease,
-        transform 0.2s ease;
-}
-
-.password-toggle-btn:hover {
-    background: #f3f6fa;
-    border-color: #b9c2cf;
-    color: #1f2937;
-}
-
-.password-toggle-btn:active {
-    transform: scale(0.97);
-}
-
-.password-toggle-btn svg {
-    flex-shrink: 0;
-}
-
-/* Revoke access button */
-
-.revoke-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-
-    padding: 9px 15px;
-
-    border: 1px solid #f0c2c2;
-    border-radius: 8px;
-
-    background: #fff5f5;
-    color: #c62828;
-
-    font-size: 14px;
-    font-weight: 600;
-
-    cursor: pointer;
-
-    transition:
-        background 0.2s ease,
-        color 0.2s ease,
-        border-color 0.2s ease,
-        transform 0.2s ease;
-}
-
-.revoke-btn:hover {
-    background: #ffe5e5;
-    border-color: #e5a5a5;
-    color: #a61b1b;
-}
-
-.revoke-btn:active {
-    transform: scale(0.97);
-}
-
-.revoke-btn svg {
-    flex-shrink: 0;
-}
-
-.revoke-btn span {
-    white-space: nowrap;
 }

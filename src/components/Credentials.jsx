@@ -29,6 +29,7 @@ const [showShareModal, setShowShareModal] = useState(false);
 const [selectedCredential, setSelectedCredential] = useState(null);
 
 const [shareEmail, setShareEmail] = useState("");
+const [accessLevel, setAccessLevel] = useState("VIEW");
     useEffect(() => {
         fetchCredentials();
     }, []);
@@ -188,6 +189,8 @@ const openShareModal = (credential) => {
 
     setShareEmail("");
 
+    setAccessLevel("VIEW");
+
     setShowShareModal(true);
 
 };
@@ -202,11 +205,12 @@ const shareCredential = async () => {
     try {
 
         await API.post(
-            "/share",
-            {
-                credentialId: selectedCredential.id,
-                email: shareEmail
-            },
+    "/share",
+    {
+        credentialId: selectedCredential.id,
+        email: shareEmail,
+        accessLevel: accessLevel
+    },
             {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`
@@ -512,6 +516,30 @@ const shareCredential = async () => {
                 value={shareEmail}
                 onChange={(e) => setShareEmail(e.target.value)}
             />
+            <div className="access-level-field">
+
+    <label>Permission Level</label>
+
+    <select
+        value={accessLevel}
+        onChange={(e) => setAccessLevel(e.target.value)}
+    >
+
+        <option value="VIEW">
+            View Only
+        </option>
+
+        <option value="EDIT">
+            Edit Access
+        </option>
+
+        <option value="FULL_ACCESS">
+            Full Management
+        </option>
+
+    </select>
+
+</div>
 
             <div className="modal-buttons">
 
