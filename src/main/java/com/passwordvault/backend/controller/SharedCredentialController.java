@@ -67,4 +67,18 @@ public String revokeAccess(
 
     return "Credential sharing access revoked successfully.";
 }
+
+@GetMapping("/{credentialId}/users")
+public List<SharedCredentialResponse> getUsersWithAccess(
+        @PathVariable Long credentialId,
+        Authentication authentication
+) {
+
+    User user = (User) authentication.getPrincipal();
+
+    return sharedCredentialService.getUsersWithAccess(
+            credentialId,
+            user
+    );
+}
 }

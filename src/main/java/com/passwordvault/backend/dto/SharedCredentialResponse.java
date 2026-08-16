@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-
+import com.passwordvault.backend.entity.AccessLevel;
 import java.time.LocalDateTime;
 
 @Getter
@@ -30,5 +30,5 @@ public class SharedCredentialResponse {
     private String sharedWith;
 
     private LocalDateTime sharedAt;
-
+    private AccessLevel accessLevel;
 }

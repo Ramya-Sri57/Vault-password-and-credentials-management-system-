@@ -35,4 +35,10 @@ public class SharedCredential {
 
     // Sharing timestamp
     private LocalDateTime sharedAt;
+
+    // Access permission
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private AccessLevel accessLevel = AccessLevel.VIEW;
 }

@@ -64,11 +64,16 @@ public ResponseEntity<?> getCredentialById(
 }
 
     @DeleteMapping("/{id}")
-    public void deleteCredential(@PathVariable Long id) {
+public ResponseEntity<?> deleteCredential(
+        @PathVariable Long id,
+        Authentication authentication
+) {
 
-        credentialService.delete(id);
+    User user = (User) authentication.getPrincipal();
 
-    }
+    return credentialService.delete(id, user);
+
+}
     @PutMapping("/{id}")
 public ResponseEntity<?> updateCredential(
         @PathVariable Long id,

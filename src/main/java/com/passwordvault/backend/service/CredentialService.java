@@ -15,7 +15,9 @@ import org.springframework.http.HttpStatus;
 import com.passwordvault.backend.dto.DashboardStatsResponse;
 import java.util.HashSet;
 import java.util.Set;
-
+import com.passwordvault.backend.entity.SharedCredential;
+import com.passwordvault.backend.repository.SharedCredentialRepository;
+import com.passwordvault.backend.entity.AccessLevel;
 @Service
 @RequiredArgsConstructor
 public class CredentialService {
@@ -25,7 +27,7 @@ public class CredentialService {
 
     private final EncryptionService encryptionService;
 
-
+    private final SharedCredentialRepository sharedCredentialRepository;
 
     public Credential save(Credential credential, User user) {
 
@@ -79,49 +81,117 @@ public class CredentialService {
 
 
 
-    public ResponseEntity<?> getById(Long id, User user) {
+   public ResponseEntity<?> getById(Long id, User user) {
 
+    Optional<Credential> existingCredential =
+            credentialRepository.findById(id);
 
-        Optional<Credential> credential =
-                credentialRepository.findById(id);
-
-
-
-        if(credential.isPresent() &&
-           credential.get().getUser().getId().equals(user.getId())) {
-
-
-            Credential result = credential.get();
-
-
-            result.setPassword(
-                    encryptionService.decrypt(
-                            result.getPassword()
-                    )
-            );
-
-
-            return ResponseEntity.ok(result);
-
-        }
-
+    if (existingCredential.isEmpty()) {
 
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body("Credential not found");
-
     }
 
+    Credential credential = existingCredential.get();
 
+    // Owner can always view
+    if (credential.getUser().getId().equals(user.getId())) {
 
+        credential.setPassword(
+                encryptionService.decrypt(
+                        credential.getPassword()
+                )
+        );
 
-
-    public void delete(Long id) {
-
-        credentialRepository.deleteById(id);
-
+        return ResponseEntity.ok(credential);
     }
 
+    // Check whether the credential was shared with this user
+    Optional<SharedCredential> sharedCredential =
+            sharedCredentialRepository
+                    .findByCredentialAndSharedWith(
+                            credential,
+                            user
+                    );
+
+    if (sharedCredential.isEmpty()) {
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body("You do not have access to this credential");
+    }
+
+    // VIEW, EDIT and FULL_ACCESS can all view
+    credential.setPassword(
+            encryptionService.decrypt(
+                    credential.getPassword()
+            )
+    );
+
+    return ResponseEntity.ok(credential);
+}
+
+
+
+
+
+    public ResponseEntity<?> delete(Long id, User user) {
+
+    Optional<Credential> existingCredential =
+            credentialRepository.findById(id);
+
+    if (existingCredential.isEmpty()) {
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body("Credential not found");
+    }
+
+    Credential credential = existingCredential.get();
+
+    // Owner has full access
+    if (credential.getUser().getId().equals(user.getId())) {
+
+        credentialRepository.delete(credential);
+
+        return ResponseEntity.ok(
+                "Credential deleted successfully"
+        );
+    }
+
+    // Check shared access
+    Optional<SharedCredential> sharedCredential =
+            sharedCredentialRepository
+                    .findByCredentialAndSharedWith(
+                            credential,
+                            user
+                    );
+
+    if (sharedCredential.isEmpty()) {
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body("You do not have access to this credential");
+    }
+
+    AccessLevel accessLevel =
+            sharedCredential.get().getAccessLevel();
+
+    // Only FULL_ACCESS can delete
+    if (accessLevel != AccessLevel.FULL_ACCESS) {
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body("You do not have full access to delete this credential");
+    }
+
+    credentialRepository.delete(credential);
+
+    return ResponseEntity.ok(
+            "Credential deleted successfully"
+    );
+}
 
 
 
@@ -154,14 +224,42 @@ public class CredentialService {
 
 
 
-        if(!credential.getUser().getId().equals(user.getId())) {
+        // Owner has full access
+if (credential.getUser().getId().equals(user.getId())) {
 
+    // Owner can update normally
 
-            return ResponseEntity
-                    .status(HttpStatus.FORBIDDEN)
-                    .body("Not allowed");
+} else {
 
-        }
+    // Check whether this credential was shared with the user
+    Optional<SharedCredential> sharedCredential =
+            sharedCredentialRepository
+                    .findByCredentialAndSharedWith(
+                            credential,
+                            user
+                    );
+
+    if (sharedCredential.isEmpty()) {
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body("You do not have access to this credential");
+
+    }
+
+    AccessLevel accessLevel =
+            sharedCredential.get().getAccessLevel();
+
+    // VIEW users cannot edit
+    if (accessLevel == AccessLevel.VIEW) {
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body("You only have view access to this credential");
+
+    }
+
+}
 
 
 
