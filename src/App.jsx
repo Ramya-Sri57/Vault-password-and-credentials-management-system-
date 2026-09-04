@@ -15,12 +15,15 @@ import EditCredential from "./components/EditCredential";
 import SessionTimeout from "./components/SessionTimeout";
 import SharedWithMe from "./components/SharedWithMe";
 import SharedByMe from "./components/SharedByMe";
+import SecurityAnalytics from "./components/SecurityAnalytics";
+import SecurityReports from "./components/SecurityReports";
 function App() {
   return (
     <BrowserRouter>
     {localStorage.getItem("token") && <SessionTimeout />}
       <Routes>
-        <Route path="/" element={<Login />} />
+       <Route path="/" element={<Login />} />
+<Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
@@ -49,6 +52,14 @@ element={<EditCredential />}
 <Route
     path="/shared-by-me"
     element={<SharedByMe />}
+/>
+<Route
+    path="/security-analytics"
+    element={<SecurityAnalytics />}
+/>
+<Route
+    path="/security-reports"
+    element={<SecurityReports />}
 />
       </Routes>
     </BrowserRouter>

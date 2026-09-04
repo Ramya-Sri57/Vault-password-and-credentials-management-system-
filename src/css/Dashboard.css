@@ -53,11 +53,10 @@
 
     align-items: center;
 
-    column-gap: 12px;
+    column-gap: 15px;
 
     box-sizing: border-box;
 }
-
 
 /* =========================================================
    LOGO
@@ -97,22 +96,28 @@
 
     align-items: center;
 
-    justify-content: center;
+    justify-content: flex-start;
 
-    gap: 4px;
+    gap: 6px;
+
+    overflow-x: auto;
+
+    scrollbar-width: none;
 }
 
+.nav-links::-webkit-scrollbar {
+    display: none;
+}
 
 /* =========================================================
    NAVIGATION BUTTON
 ========================================================= */
-
 .nav-btn {
-    min-width: 72px;
+    min-width: 78px;
 
     min-height: 66px;
 
-    padding: 8px 7px;
+    padding: 8px 9px;
 
     border-radius: 13px;
 
@@ -125,6 +130,10 @@
     justify-content: center;
 
     gap: 4px;
+
+    flex-shrink: 0;
+
+    box-sizing: border-box;
 
     text-decoration: none;
 
@@ -186,7 +195,7 @@
 ========================================================= */
 
 .logout-button {
-    width: 88px;
+    width: 90px;
 
     height: 46px;
 
@@ -206,12 +215,13 @@
 
     white-space: nowrap;
 
+    flex-shrink: 0;
+
     transition:
         background 0.2s ease,
         transform 0.2s ease,
         box-shadow 0.2s ease;
 }
-
 
 .logout-button:hover {
     background: #dc2626;
@@ -1029,8 +1039,7 @@ a:focus-visible {
 
 
     .security-tip {
-        padding: 15px;
-
+        padding: 15px;      
         font-size: 13px;
     }
 }

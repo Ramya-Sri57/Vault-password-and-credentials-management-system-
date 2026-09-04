@@ -113,6 +113,12 @@ const totalWebsites = new Set(
     <Link to="/shared-by-me" className="nav-btn">
     📤 Shared By Me
 </Link>
+<Link to="/security-analytics" className="nav-btn">
+    🛡️ Security Analytics
+</Link>
+<Link to="/security-reports" className="nav-btn">
+    📑 Security Reports
+</Link>
 </nav>
             <button
                 className="logout-button"
