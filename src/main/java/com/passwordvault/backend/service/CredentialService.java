@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.List;
-
+import com.passwordvault.backend.dto.PasswordHealthResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import com.passwordvault.backend.dto.DashboardStatsResponse;
@@ -346,4 +346,78 @@ credential.setExpiryDate(
     );
 }
 
+public PasswordHealthResponse getPasswordHealth(User user) {
+
+    List<Credential> credentials =
+            credentialRepository.findByUserId(user.getId());
+
+    int strongPasswords = 0;
+    int mediumPasswords = 0;
+    int weakPasswords = 0;
+
+    for (Credential credential : credentials) {
+
+        String password;
+
+        try {
+            password = encryptionService.decrypt(
+                    credential.getPassword()
+            );
+        } catch (Exception e) {
+            password = credential.getPassword();
+        }
+
+        int score = 0;
+
+        if (password.length() >= 8) {
+            score++;
+        }
+
+        if (password.matches(".*[A-Z].*")) {
+            score++;
+        }
+
+        if (password.matches(".*[a-z].*")) {
+            score++;
+        }
+
+        if (password.matches(".*\\d.*")) {
+            score++;
+        }
+
+        if (password.matches(".*[@$!%*?&#].*")) {
+            score++;
+        }
+
+        if (score == 5) {
+            strongPasswords++;
+
+        } else if (score >= 3) {
+            mediumPasswords++;
+
+        } else {
+            weakPasswords++;
+        }
+    }
+
+    int totalPasswords = credentials.size();
+
+    double healthPercentage = 0;
+
+    if (totalPasswords > 0) {
+        healthPercentage =
+                ((strongPasswords * 100.0)
+                        + (mediumPasswords * 60.0)
+                        + (weakPasswords * 20.0))
+                        / totalPasswords;
+    }
+
+    return new PasswordHealthResponse(
+            totalPasswords,
+            strongPasswords,
+            mediumPasswords,
+            weakPasswords,
+            healthPercentage
+    );
+}
 }

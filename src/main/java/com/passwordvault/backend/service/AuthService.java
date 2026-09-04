@@ -1,8 +1,7 @@
- package com.passwordvault.backend.service;
+package com.passwordvault.backend.service;
 
 import com.passwordvault.backend.dto.AuthResponse;
 import com.passwordvault.backend.dto.LoginRequest;
-import com.passwordvault.backend.dto.LoginResponse;
 import com.passwordvault.backend.dto.RegisterRequest;
 import com.passwordvault.backend.entity.User;
 import com.passwordvault.backend.repository.UserRepository;
@@ -10,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.passwordvault.backend.security.JwtService;
+
 import java.util.Optional;
 
 @Service
@@ -19,6 +19,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final LoginActivityService loginActivityService;
 
     // Register
     public AuthResponse register(RegisterRequest request) {
@@ -51,18 +52,51 @@ public class AuthService {
     // Login
     public AuthResponse login(LoginRequest request) {
 
-    User user = userRepository.findByEmail(request.getEmail())
-            .orElseThrow(() -> new RuntimeException("User not found"));
+        Optional<User> userOptional =
+                userRepository.findByEmail(request.getEmail());
 
-    if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-        throw new RuntimeException("Invalid Password");
+        // User does not exist
+        if (userOptional.isEmpty()) {
+
+            loginActivityService.recordLogin(
+                    null,
+                    request.getEmail(),
+                    "FAILED"
+            );
+
+            throw new RuntimeException("User not found");
+        }
+
+        User user = userOptional.get();
+
+        // Password is incorrect
+        if (!passwordEncoder.matches(
+                request.getPassword(),
+                user.getPassword()
+        )) {
+
+            loginActivityService.recordLogin(
+                    user,
+                    request.getEmail(),
+                    "FAILED"
+            );
+
+            throw new RuntimeException("Invalid Password");
+        }
+
+        // Password is correct
+        loginActivityService.recordLogin(
+                user,
+                request.getEmail(),
+                "SUCCESS"
+        );
+
+        // Generate JWT
+        String token = jwtService.generateToken(user.getEmail());
+
+        return new AuthResponse(
+                "Login Successful",
+                token
+        );
     }
-
-    String token = jwtService.generateToken(user.getEmail());
-
-    return new AuthResponse(
-            "Login Successful",
-            token
-    );
-}
 }

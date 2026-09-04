@@ -39,6 +39,7 @@ protected boolean shouldNotFilter(HttpServletRequest request) {
             HttpServletResponse response,
             FilterChain filterChain)
             throws ServletException, IOException {
+                System.out.println("========== JWT FILTER CALLED ==========");
 
         String authHeader = request.getHeader("Authorization");
         System.out.println("Authorization Header: " + authHeader);

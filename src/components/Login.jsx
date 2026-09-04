@@ -38,7 +38,8 @@ function Login() {
 
             console.log("Login response:", response.data);
 
-           localStorage.setItem("token", response.data.token);
+localStorage.setItem("token", response.data.token);
+console.log("TOKEN SAVED:", localStorage.getItem("token"));
 
 toast.success("Login successful!");
 
