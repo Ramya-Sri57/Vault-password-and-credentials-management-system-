@@ -16,23 +16,52 @@ function EditProfile() {
 
     useEffect(() => {
 
-        const fetchProfile = async () => {
+       const fetchProfile = async () => {
+    try {
+        const response = await API.get("/profile");
 
-            try {
+        setProfile(response.data);
 
-                const response = await API.get("/profile", {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`
-                    }
-                });
+    } catch (error) {
+        console.error("Fetch profile error:", error);
 
-                setProfile(response.data);
+        if (error.response) {
+            const status = error.response.status;
 
-            } catch (error) {
-                console.log(error);
+            if (status === 401) {
+                toast.error("Your session has expired. Please login again.");
+                localStorage.removeItem("token");
+                navigate("/login");
+
+            } else if (status === 403) {
+                toast.error("You are not authorized to access this profile.");
+                navigate("/dashboard");
+
+            } else if (status === 404) {
+                toast.error("Profile not found.");
+
+            } else if (status >= 500) {
+                toast.error("Server error. Unable to load your profile.");
+
+            } else {
+                toast.error(
+                    error.response.data?.message ||
+                    "Unable to load your profile."
+                );
             }
 
-        };
+        } else if (error.request) {
+            toast.error(
+                "Unable to connect to the server. Please try again."
+            );
+
+        } else {
+            toast.error(
+                "Something went wrong while loading your profile."
+            );
+        }
+    }
+};
 
         fetchProfile();
 
@@ -48,22 +77,36 @@ function EditProfile() {
     };
 
     const updateProfile = async (e) => {
-
     e.preventDefault();
+
+    const fullName = profile.fullName.trim();
+    const email = profile.email.trim();
+
+    // Frontend validation
+    if (!fullName) {
+        toast.error("Please enter your full name.");
+        return;
+    }
+
+    if (!email) {
+        toast.error("Please enter your email.");
+        return;
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailPattern.test(email)) {
+        toast.error("Please enter a valid email address.");
+        return;
+    }
 
     setLoading(true);
 
     try {
-
-        await API.put(
-            "/profile",
-            profile,
-            {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`
-                }
-            }
-        );
+        await API.put("/profile", {
+            fullName,
+            email
+        });
 
         toast.success("Profile updated successfully!");
 
@@ -72,17 +115,65 @@ function EditProfile() {
         }, 1000);
 
     } catch (error) {
+        console.error("Update profile error:", error);
 
-        toast.error(
-            error.response?.data || "Unable to update profile"
-        );
+        if (error.response) {
+            const status = error.response.status;
 
+            if (status === 401) {
+                toast.error(
+                    "Your session has expired. Please login again."
+                );
+
+                localStorage.removeItem("token");
+                navigate("/login");
+
+            } else if (status === 403) {
+                toast.error(
+                    "You are not authorized to update this profile."
+                );
+
+            } else if (status === 404) {
+                toast.error("Profile not found.");
+
+            } else if (status === 400) {
+                toast.error(
+                    error.response.data?.message ||
+                    "Invalid profile details."
+                );
+
+            } else if (status === 409) {
+                toast.error(
+                    error.response.data?.message ||
+                    "This email is already in use."
+                );
+
+            } else if (status >= 500) {
+                toast.error(
+                    "Server error. Unable to update profile."
+                );
+
+            } else {
+                toast.error(
+                    error.response.data?.message ||
+                    "Unable to update profile."
+                );
+            }
+
+        } else if (error.request) {
+            toast.error(
+                "Unable to connect to the server. Please try again."
+            );
+
+        } else {
+            toast.error(
+                "Something went wrong. Please try again."
+            );
+
+        }
     } finally {
-
         setLoading(false);
-
     }
-
 };
 
     return (

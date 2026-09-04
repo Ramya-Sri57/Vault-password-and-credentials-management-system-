@@ -10,25 +10,57 @@ function Profile() {
     useEffect(() => {
 
         const fetchProfile = async () => {
+    try {
+        const response = await API.get("/profile");
 
-            try {
+        setProfile(response.data);
 
-                const response = await API.get("/profile", {
-                    headers: {
-                        Authorization:
-                            `Bearer ${localStorage.getItem("token")}`
-                    }
-                });
+    } catch (error) {
+        console.error("Fetch profile error:", error);
 
-                setProfile(response.data);
+        if (error.response) {
+            const status = error.response.status;
 
-            } catch (error) {
+            if (status === 401) {
+                alert("Your session has expired. Please login again.");
 
-                console.log(error);
+                localStorage.removeItem("token");
+                navigate("/login");
 
+            } else if (status === 403) {
+                alert(
+                    "You are not authorized to access this profile."
+                );
+
+                navigate("/dashboard");
+
+            } else if (status === 404) {
+                alert("Profile not found.");
+
+            } else if (status >= 500) {
+                alert(
+                    "Server error. Unable to load your profile."
+                );
+
+            } else {
+                alert(
+                    error.response.data?.message ||
+                    "Unable to load your profile."
+                );
             }
 
-        };
+        } else if (error.request) {
+            alert(
+                "Unable to connect to the server. Please try again."
+            );
+
+        } else {
+            alert(
+                "Something went wrong while loading your profile."
+            );
+        }
+    }
+};
 
         fetchProfile();
 

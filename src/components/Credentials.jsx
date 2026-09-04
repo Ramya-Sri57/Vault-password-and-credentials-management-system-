@@ -34,26 +34,58 @@ const [accessLevel, setAccessLevel] = useState("VIEW");
         fetchCredentials();
     }, []);
 
-    const fetchCredentials = async () => {
+const fetchCredentials = async () => {
+    try {
+        const response = await API.get("/credentials");
 
-        try {
+        setCredentials(response.data);
 
-            const response = await API.get("/credentials", {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`
-                }
-            });
-setCredentials(response.data);
-response.data.forEach(item => {
-    console.log(item.website, item.category);
-});
-        } catch (error) {
+        response.data.forEach(item => {
+            console.log(item.website, item.category);
+        });
 
-            console.log(error);
+    } catch (error) {
+        console.error("Fetch credentials error:", error);
 
+        if (error.response) {
+            const status = error.response.status;
+
+            if (status === 401 || status === 403) {
+                toast.error(
+                    "Your session has expired. Please login again."
+                );
+
+                localStorage.removeItem("token");
+                navigate("/login");
+
+            } else if (status === 404) {
+                setCredentials([]);
+                toast.error("No saved credentials were found.");
+
+            } else if (status >= 500) {
+                toast.error(
+                    "Server error. Unable to load your passwords."
+                );
+
+            } else {
+                toast.error(
+                    error.response.data?.message ||
+                    "Unable to load your passwords."
+                );
+            }
+
+        } else if (error.request) {
+            toast.error(
+                "Unable to connect to the server. Please try again."
+            );
+
+        } else {
+            toast.error(
+                "Something went wrong while loading passwords."
+            );
         }
-
-    };
+    }
+};
 
     const togglePassword = (id) => {
 
@@ -98,9 +130,52 @@ response.data.forEach(item => {
 toast.success("Password deleted successfully!");
 
 fetchCredentials();
-        } catch (error) {
+                } catch (error) {
 
-           toast.error("Unable to delete password.");
+            console.error("Delete credential error:", error);
+
+            if (error.response) {
+                const status = error.response.status;
+
+                if (status === 401 || status === 403) {
+                    toast.error(
+                        "You are not authorized to delete this password."
+                    );
+
+                    if (status === 401) {
+                        localStorage.removeItem("token");
+                        navigate("/login");
+                    }
+
+                } else if (status === 404) {
+                    toast.error(
+                        "Password not found. It may have already been deleted."
+                    );
+
+                    fetchCredentials();
+
+                } else if (status >= 500) {
+                    toast.error(
+                        "Server error. Unable to delete password."
+                    );
+
+                } else {
+                    toast.error(
+                        error.response.data?.message ||
+                        "Unable to delete password."
+                    );
+                }
+
+            } else if (error.request) {
+                toast.error(
+                    "Unable to connect to the server. Please try again."
+                );
+
+            } else {
+                toast.error(
+                    "Something went wrong while deleting the password."
+                );
+            }
         }
 
     };
@@ -208,7 +283,7 @@ const shareCredential = async () => {
     "/share",
     {
         credentialId: selectedCredential.id,
-        email: shareEmail,
+        email: shareEmail.trim(),
         accessLevel: accessLevel
     },
             {
@@ -224,19 +299,61 @@ const shareCredential = async () => {
 
         setShareEmail("");
 
-    } catch (error) {
+        } catch (error) {
 
-    console.log("Complete Error:", error);
+        console.error("Share credential error:", error);
 
-    console.log("Response:", error.response);
+        if (error.response) {
+            const status = error.response.status;
 
-    console.log("Response Data:", error.response?.data);
+            if (status === 401) {
+                toast.error(
+                    "Your session has expired. Please login again."
+                );
 
-    toast.error(
-        error.response?.data || "Sharing failed."
-    );
+                localStorage.removeItem("token");
+                navigate("/login");
 
-}
+            } else if (status === 403) {
+                toast.error(
+                    "You are not authorized to share this credential."
+                );
+
+            } else if (status === 404) {
+                toast.error(
+                    error.response.data?.message ||
+                    "Recipient or credential was not found."
+                );
+
+            } else if (status === 400) {
+                toast.error(
+                    error.response.data?.message ||
+                    "Invalid sharing details."
+                );
+
+            } else if (status >= 500) {
+                toast.error(
+                    "Server error. Unable to share the credential."
+                );
+
+            } else {
+                toast.error(
+                    error.response.data?.message ||
+                    "Sharing failed. Please try again."
+                );
+            }
+
+        } else if (error.request) {
+            toast.error(
+                "Unable to connect to the server. Please try again."
+            );
+
+        } else {
+            toast.error(
+                "Something went wrong while sharing the credential."
+            );
+        }
+    }
 
 };
    return (

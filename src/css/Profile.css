@@ -160,3 +160,81 @@ body{
     background:#1e293b;
 
 }
+
+/* =========================================
+   PROFILE RESPONSIVE FIXES
+========================================= */
+
+@media (max-width: 768px) {
+    .profile-page {
+        width: 100%;
+        padding: 20px 14px;
+        box-sizing: border-box;
+    }
+
+    .profile-card {
+        width: 100%;
+        max-width: 650px;
+        margin: 0 auto;
+        padding: 28px 22px;
+        box-sizing: border-box;
+    }
+
+    .profile-card input,
+    .profile-card select,
+    .profile-card textarea {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .profile-actions,
+    .form-buttons {
+        width: 100%;
+        display: flex;
+        gap: 10px;
+    }
+
+    .profile-actions button,
+    .form-buttons button {
+        flex: 1;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-page {
+        padding: 16px 10px;
+    }
+
+    .profile-card {
+        padding: 22px 16px;
+        border-radius: 16px;
+    }
+
+    .profile-card h2 {
+        font-size: 24px;
+    }
+
+    .profile-card p {
+        font-size: 13px;
+    }
+
+    .profile-card input,
+    .profile-card select,
+    .profile-card textarea {
+        font-size: 14px;
+        padding: 11px 12px;
+    }
+
+    .profile-actions,
+    .form-buttons {
+        flex-direction: column;
+    }
+
+    .profile-actions button,
+    .form-buttons button {
+        width: 100%;
+        min-height: 44px;
+    }
+}

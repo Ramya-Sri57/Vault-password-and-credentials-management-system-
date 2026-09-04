@@ -647,3 +647,67 @@
 
     font-size: 14px;
 }
+
+/* =========================================
+   SECURITY REPORTS RESPONSIVE FIXES
+========================================= */
+
+@media (max-width: 768px) {
+    .reports-page {
+        width: 100%;
+        padding: 20px 14px;
+        box-sizing: border-box;
+    }
+
+    .report-card,
+    .security-report-card {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .report-grid,
+    .reports-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .recent-login-activity {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .login-activity-list {
+        width: 100%;
+    }
+
+    .login-activity-item {
+        width: 100%;
+        box-sizing: border-box;
+    }
+}
+
+@media (max-width: 480px) {
+    .reports-page {
+        padding: 16px 10px;
+    }
+
+    .report-card,
+    .security-report-card {
+        padding: 18px 14px;
+        border-radius: 16px;
+    }
+
+    .report-card h2,
+    .security-report-card h2 {
+        font-size: 20px;
+    }
+
+    .login-activity-item {
+        padding: 12px;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .login-status {
+        font-size: 12px;
+    }
+}

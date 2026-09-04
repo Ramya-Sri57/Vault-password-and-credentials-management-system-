@@ -14,35 +14,86 @@ function ForgotPassword() {
 
 
     const sendOtp = async (e) => {
+    e.preventDefault();
 
-        e.preventDefault();
+    const trimmedEmail = email.trim();
 
-        try {
+    // Frontend validation
+    if (!trimmedEmail) {
+        toast.error("Please enter your email address.");
+        return;
+    }
 
-            setLoading(true);
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-            await API.post("/auth/forgot-password", {
-                email
-            });
+    if (!emailPattern.test(trimmedEmail)) {
+        toast.error("Please enter a valid email address.");
+        return;
+    }
 
-            setOtpSent(true);
+    try {
+        setLoading(true);
 
-        } catch (error) {
+        await API.post("/auth/forgot-password", {
+            email: trimmedEmail
+        });
 
-            console.log(error);
+        setEmail(trimmedEmail);
+        setOtpSent(true);
 
-           toast.error(
-    error.response?.data ||
-    "Unable to send OTP"
-);
+        toast.success("OTP sent successfully!");
 
-        } finally {
+    } catch (error) {
+        console.error("Forgot password error:", error);
 
-            setLoading(false);
+        if (error.response) {
+            const status = error.response.status;
 
+            if (status === 400) {
+                toast.error(
+                    error.response.data?.message ||
+                    error.response.data ||
+                    "Invalid email address."
+                );
+
+            } else if (status === 404) {
+                toast.error(
+                    "No account found with this email address."
+                );
+
+            } else if (status === 429) {
+                toast.error(
+                    "Too many OTP requests. Please try again later."
+                );
+
+            } else if (status >= 500) {
+                toast.error(
+                    "Server error. Unable to send OTP. Please try again later."
+                );
+
+            } else {
+                toast.error(
+                    error.response.data?.message ||
+                    error.response.data ||
+                    "Unable to send OTP."
+                );
+            }
+
+        } else if (error.request) {
+            toast.error(
+                "Unable to connect to the server. Please try again."
+            );
+
+        } else {
+            toast.error(
+                "Something went wrong. Please try again."
+            );
         }
-    };
 
+    } finally {
+        setLoading(false);
+    }
+};
 
     // OTP success screen
     if (otpSent) {

@@ -18,45 +18,68 @@ const [loadingUsers, setLoadingUsers] = useState(false);
 const [newShareEmail, setNewShareEmail] = useState("");
 const [newAccessLevel, setNewAccessLevel] = useState("VIEW");
     useEffect(() => {
-        fetchSharedCredentials();
-    }, []);
-
+    fetchSharedCredentials();
+}, [navigate]);
     const fetchSharedCredentials = async () => {
+    try {
+        setLoading(true);
+        setError("");
 
-        try {
+        const response = await API.get("/share/shared-with-me");
 
-            setLoading(true);
-            setError("");
+        console.log("Shared credentials:", response.data);
 
-            const response = await API.get(
-                "/share/shared-with-me"
-            );
+        setSharedCredentials(response.data);
 
-            console.log(
-                "Shared credentials:",
-                response.data
-            );
+    } catch (error) {
+        console.error(
+            "Failed to fetch shared credentials:",
+            error
+        );
 
-            setSharedCredentials(response.data);
+        if (error.response) {
+            const status = error.response.status;
 
-        } catch (error) {
+            if (status === 401) {
+                localStorage.removeItem("token");
+                navigate("/login");
 
-            console.error(
-                "Failed to fetch shared credentials:",
-                error
-            );
+            } else if (status === 403) {
+                setError(
+                    "You are not authorized to view shared credentials."
+                );
 
+            } else if (status === 404) {
+                setError("No shared credentials were found.");
+
+            } else if (status >= 500) {
+                setError(
+                    "Server error. Unable to load shared credentials."
+                );
+
+            } else {
+                setError(
+                    error.response.data?.message ||
+                    error.response.data ||
+                    "Unable to load shared credentials."
+                );
+            }
+
+        } else if (error.request) {
             setError(
-                "Unable to load shared credentials."
+                "Unable to connect to the server. Please try again."
             );
 
-        } finally {
-
-            setLoading(false);
-
+        } else {
+            setError(
+                "Something went wrong while loading shared credentials."
+            );
         }
-    };
 
+    } finally {
+        setLoading(false);
+    }
+};
     const togglePassword = (id) => {
 
         setVisiblePasswords((previous) => ({
@@ -67,9 +90,7 @@ const [newAccessLevel, setNewAccessLevel] = useState("VIEW");
     };
 
     const openManageSharing = async (item) => {
-
     try {
-
         setManageCredential(item);
         setShowManageModal(true);
         setLoadingUsers(true);
@@ -81,26 +102,39 @@ const [newAccessLevel, setNewAccessLevel] = useState("VIEW");
         setUsersWithAccess(response.data);
 
     } catch (error) {
+        console.error("Failed to load sharing details:", error);
 
-        console.error(
-            "Failed to load sharing details:",
-            error
-        );
+        if (error.response) {
+            const status = error.response.status;
 
-        alert(
-            error.response?.data ||
-            "Unable to load sharing details."
-        );
+            if (status === 401) {
+                localStorage.removeItem("token");
+                navigate("/login");
+            } else if (status === 403) {
+                alert("You are not authorized to manage sharing.");
+            } else if (status === 404) {
+                alert("Credential or sharing details not found.");
+            } else if (status >= 500) {
+                alert("Server error. Unable to load sharing details.");
+            } else {
+                alert(
+                    error.response.data?.message ||
+                    error.response.data ||
+                    "Unable to load sharing details."
+                );
+            }
+        } else if (error.request) {
+            alert("Unable to connect to the server. Please try again.");
+        } else {
+            alert("Something went wrong while loading sharing details.");
+        }
 
         setShowManageModal(false);
 
     } finally {
-
         setLoadingUsers(false);
-
     }
 };
-
     if (loading) {
 
         return (
@@ -329,50 +363,90 @@ const [newAccessLevel, setNewAccessLevel] = useState("VIEW");
 
     <button
         className="delete-btn"
-        onClick={() => {
+        onClick={async () => {
 
-            if (
-                window.confirm(
-                    "Are you sure you want to delete this credential?"
-                )
-            ) {
+    if (
+        !window.confirm(
+            "Are you sure you want to delete this credential?"
+        )
+    ) {
+        return;
+    }
 
-                API.delete(
-                    `/credentials/${item.credentialId}`,
-                    {
-                        headers: {
-                            Authorization:
-                                `Bearer ${localStorage.getItem("token")}`
-                        }
-                    }
-                )
-                .then(() => {
+    try {
 
-                    setSharedCredentials((previous) =>
-                        previous.filter(
-                            (credential) =>
-                                credential.shareId !== item.shareId
-                        )
-                    );
+        await API.delete(
+            `/credentials/${item.credentialId}`
+        );
 
-                })
-                .catch((error) => {
+        setSharedCredentials((previous) =>
+            previous.filter(
+                (credential) =>
+                    credential.shareId !== item.shareId
+            )
+        );
 
-                    console.error(
-                        "Failed to delete credential:",
-                        error
-                    );
+    } catch (error) {
 
-                    alert(
-                        error.response?.data ||
-                        "Failed to delete credential."
-                    );
+        console.error(
+            "Failed to delete credential:",
+            error
+        );
 
-                });
+        if (error.response) {
+
+            const status = error.response.status;
+
+            if (status === 401) {
+
+                localStorage.removeItem("token");
+                navigate("/login");
+
+            } else if (status === 403) {
+
+                alert(
+                    "You are not authorized to delete this credential."
+                );
+
+            } else if (status === 404) {
+
+                alert(
+                    "Credential not found."
+                );
+
+            } else if (status >= 500) {
+
+                alert(
+                    "Server error. Unable to delete credential."
+                );
+
+            } else {
+
+                alert(
+                    error.response.data?.message ||
+                    error.response.data ||
+                    "Failed to delete credential."
+                );
 
             }
 
-        }}
+        } else if (error.request) {
+
+            alert(
+                "Unable to connect to the server. Please try again."
+            );
+
+        } else {
+
+            alert(
+                "Something went wrong while deleting the credential."
+            );
+
+        }
+
+    }
+
+}}
     >
         🗑 Delete
     </button>
@@ -486,13 +560,33 @@ const [newAccessLevel, setNewAccessLevel] = useState("VIEW");
                                         );
 
                                     } catch (error) {
+    console.error("Failed to revoke access:", error);
 
-                                        alert(
-                                            error.response?.data ||
-                                            "Failed to revoke access."
-                                        );
+    if (error.response) {
+        const status = error.response.status;
 
-                                    }
+        if (status === 401) {
+            localStorage.removeItem("token");
+            navigate("/login");
+        } else if (status === 403) {
+            alert("You are not authorized to revoke this access.");
+        } else if (status === 404) {
+            alert("Sharing record not found.");
+        } else if (status >= 500) {
+            alert("Server error. Unable to revoke access.");
+        } else {
+            alert(
+                error.response.data?.message ||
+                error.response.data ||
+                "Failed to revoke access."
+            );
+        }
+    } else if (error.request) {
+        alert("Unable to connect to the server. Please try again.");
+    } else {
+        alert("Something went wrong while revoking access.");
+    }
+}
 
                                 }}
                             >
@@ -561,15 +655,19 @@ const [newAccessLevel, setNewAccessLevel] = useState("VIEW");
                     className="share-confirm-btn"
                     onClick={async () => {
 
-                        if (!newShareEmail.trim()) {
+                        const recipientEmail = newShareEmail.trim();
 
-                            alert(
-                                "Please enter recipient email."
-                            );
+if (!recipientEmail) {
+    alert("Please enter recipient email.");
+    return;
+}
 
-                            return;
-                        }
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+if (!emailPattern.test(recipientEmail)) {
+    alert("Please enter a valid email address.");
+    return;
+}
                         try {
 
                             await API.post(
@@ -602,13 +700,76 @@ const [newAccessLevel, setNewAccessLevel] = useState("VIEW");
 
                         } catch (error) {
 
-                            alert(
-                                error.response?.data ||
-                                "Failed to share credential."
-                            );
+    console.error(
+        "Failed to share credential:",
+        error
+    );
 
-                        }
+    if (error.response) {
 
+        const status = error.response.status;
+
+        if (status === 401) {
+
+            localStorage.removeItem("token");
+            navigate("/login");
+
+        } else if (status === 403) {
+
+            alert(
+                "You are not authorized to share this credential."
+            );
+
+        } else if (status === 400) {
+
+            alert(
+                error.response.data?.message ||
+                error.response.data ||
+                "Invalid sharing request."
+            );
+
+        } else if (status === 404) {
+
+            alert(
+                "Credential or recipient user not found."
+            );
+
+        } else if (status === 409) {
+
+            alert(
+                "This credential is already shared with this user."
+            );
+
+        } else if (status >= 500) {
+
+            alert(
+                "Server error. Unable to share credential."
+            );
+
+        } else {
+
+            alert(
+                error.response.data?.message ||
+                error.response.data ||
+                "Failed to share credential."
+            );
+
+        }
+
+    } else if (error.request) {
+
+        alert(
+            "Unable to connect to the server. Please try again."
+        );
+
+    } else {
+
+        alert(
+            "Something went wrong while sharing the credential."
+        );
+
+    }
+}
                     }}
                 >
                     Share

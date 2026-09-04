@@ -33,28 +33,28 @@ function AddCredential() {
     };
 
     const checkStrength = (password) => {
-        if (password.length < 6) {
-            return "Weak";
-        }
+    if (!password) {
+        return "";
+    }
 
-        const hasUpper = /[A-Z]/.test(password);
-        const hasLower = /[a-z]/.test(password);
-        const hasNumber = /\d/.test(password);
-        const hasSpecial = /[@$!%*?&#]/.test(password);
+    let score = 0;
 
-        const score = [
-            hasUpper,
-            hasLower,
-            hasNumber,
-            hasSpecial
-        ].filter(Boolean).length;
+    if (password.length >= 8) score++;
+    if (/[A-Z]/.test(password)) score++;
+    if (/[a-z]/.test(password)) score++;
+    if (/\d/.test(password)) score++;
+    if (/[@$!%*?&#]/.test(password)) score++;
 
-        if (score <= 2) {
-            return "Medium";
-        }
-
+    if (score >= 5) {
         return "Strong";
-    };
+    }
+
+    if (score >= 3) {
+        return "Medium";
+    }
+
+    return "Weak";
+};
 
     const generatePassword = () => {
         const chars =
@@ -79,50 +79,114 @@ function AddCredential() {
     };
 
     const saveCredential = async (e) => {
-        e.preventDefault();
+    e.preventDefault();
 
-        setLoading(true);
+    // Frontend validation
+    if (!credential.website.trim()) {
+        toast.error("Please enter the website.");
+        return;
+    }
 
-        try {
-            await API.post(
-                "/credentials",
-                credential,
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`
-                    }
-                }
-            );
+    if (!credential.username.trim()) {
+        toast.error("Please enter the username or email.");
+        return;
+    }
 
-            toast.success("Password saved successfully!");
+    if (!credential.password.trim()) {
+        toast.error("Please enter a password.");
+        return;
+    }
 
-            setCredential({
-                website: "",
-                username: "",
-                password: "",
-                category: "OTHER",
-                expiryDate: "",
-                notes: ""
-            });
+    if (credential.password.length < 8) {
+        toast.error("Password must contain at least 8 characters.");
+        return;
+    }
 
-            setStrength("");
+    setLoading(true);
 
-            setTimeout(() => {
-                navigate("/credentials");
-            }, 1000);
+    try {
+        await API.post(
+            "/credentials",
+            {
+                ...credential,
+                website: credential.website.trim(),
+                username: credential.username.trim()
+            }
+        );
 
-        } catch (error) {
-            console.log(error);
+        toast.success("Password saved successfully!");
 
+        setCredential({
+            website: "",
+            username: "",
+            password: "",
+            category: "OTHER",
+            expiryDate: "",
+            notes: ""
+        });
+
+        setStrength("");
+
+        setTimeout(() => {
+            navigate("/credentials");
+        }, 1000);
+
+    } catch (error) {
+        console.error("Save credential error:", error);
+
+        if (error.response) {
+            const status = error.response.status;
+
+            if (status === 401 || status === 403) {
+                toast.error(
+                    "Your session has expired. Please login again."
+                );
+
+                localStorage.removeItem("token");
+
+                setTimeout(() => {
+                    navigate("/login");
+                }, 1000);
+
+            } else if (status === 400) {
+                toast.error(
+                    error.response.data?.message ||
+                    "Invalid credential details."
+                );
+
+            } else if (status === 404) {
+                toast.error(
+                    error.response.data?.message ||
+                    "Unable to find the requested resource."
+                );
+
+            } else if (status >= 500) {
+                toast.error(
+                    "Server error. Please try again later."
+                );
+
+            } else {
+                toast.error(
+                    error.response.data?.message ||
+                    "Unable to save password."
+                );
+            }
+
+        } else if (error.request) {
             toast.error(
-                error.response?.data || "Unable to save password."
+                "Unable to connect to the server. Please try again."
             );
 
-        } finally {
-            setLoading(false);
+        } else {
+            toast.error(
+                "Something went wrong. Please try again."
+            );
         }
-    };
 
+    } finally {
+        setLoading(false);
+    }
+};
     return (
         <div className="add-page">
 

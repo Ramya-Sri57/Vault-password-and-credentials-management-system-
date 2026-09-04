@@ -27,26 +27,64 @@ function EditCredential(){
     },[]);
 
 
-    const fetchCredential = async()=>{
+    const fetchCredential = async () => {
+    try {
+        const response = await API.get(`/credentials/${id}`);
 
-        try{
+        setCredential(response.data);
 
-            const response = await API.get(`/credentials/${id}`,{
-                headers:{
-                    Authorization:`Bearer ${localStorage.getItem("token")}`
-                }
-            });
+    } catch (error) {
+        console.error("Fetch credential error:", error);
 
-            setCredential(response.data);
+        if (error.response) {
+            const status = error.response.status;
 
+            if (status === 401) {
+                toast.error(
+                    "Your session has expired. Please login again."
+                );
+
+                localStorage.removeItem("token");
+                navigate("/login");
+
+            } else if (status === 403) {
+                toast.error(
+                    "You are not authorized to edit this password."
+                );
+
+                navigate("/credentials");
+
+            } else if (status === 404) {
+                toast.error(
+                    "Password not found."
+                );
+
+                navigate("/credentials");
+
+            } else if (status >= 500) {
+                toast.error(
+                    "Server error. Unable to load the password."
+                );
+
+            } else {
+                toast.error(
+                    error.response.data?.message ||
+                    "Unable to load the password."
+                );
+            }
+
+        } else if (error.request) {
+            toast.error(
+                "Unable to connect to the server. Please try again."
+            );
+
+        } else {
+            toast.error(
+                "Something went wrong while loading the password."
+            );
         }
-        catch(error){
-
-            console.log(error);
-
-        }
-
-    };
+    }
+};
 
 
     const handleChange=(e)=>{
@@ -59,39 +97,109 @@ function EditCredential(){
     };
 
 
-    const updateCredential=async(e)=>{
+    const updateCredential = async (e) => {
+    e.preventDefault();
 
-        e.preventDefault();
-         setLoading(true);
+    // Frontend validation
+    if (!credential.website.trim()) {
+        toast.error("Please enter the website.");
+        return;
+    }
 
-        try{
+    if (!credential.username.trim()) {
+        toast.error("Please enter the username or email.");
+        return;
+    }
 
-            await API.put(`/credentials/${id}`,credential,{
-                headers:{
-                    Authorization:`Bearer ${localStorage.getItem("token")}`
-                }
-            });
+    if (!credential.password.trim()) {
+        toast.error("Please enter a password.");
+        return;
+    }
 
-            toast.success("Password updated successfully!");
+    if (credential.password.length < 8) {
+        toast.error("Password must contain at least 8 characters.");
+        return;
+    }
 
-setTimeout(() => {
-    navigate("/credentials");
-}, 1000);
+    setLoading(true);
 
-        }
-        catch(error){
+    try {
+        await API.put(
+            `/credentials/${id}`,
+            {
+                ...credential,
+                website: credential.website.trim(),
+                username: credential.username.trim()
+            }
+        );
 
+        toast.success("Password updated successfully!");
+
+        setTimeout(() => {
+            navigate("/credentials");
+        }, 1000);
+
+    } catch (error) {
+        console.error("Update credential error:", error);
+
+        if (error.response) {
+            const status = error.response.status;
+
+            if (status === 401) {
+                toast.error(
+                    "Your session has expired. Please login again."
+                );
+
+                localStorage.removeItem("token");
+                navigate("/login");
+
+            } else if (status === 403) {
+                toast.error(
+                    "You are not authorized to update this password."
+                );
+
+            } else if (status === 404) {
+                toast.error(
+                    "Password not found. It may have been deleted."
+                );
+
+                setTimeout(() => {
+                    navigate("/credentials");
+                }, 1000);
+
+            } else if (status === 400) {
+                toast.error(
+                    error.response.data?.message ||
+                    "Invalid password details."
+                );
+
+            } else if (status >= 500) {
+                toast.error(
+                    "Server error. Unable to update the password."
+                );
+
+            } else {
+                toast.error(
+                    error.response.data?.message ||
+                    "Unable to update password."
+                );
+            }
+
+        } else if (error.request) {
             toast.error(
-    error.response?.data || "Update failed."
-);
+                "Unable to connect to the server. Please try again."
+            );
 
-
+        } else {
+            toast.error(
+                "Something went wrong while updating the password."
+            );
         }
-        finally{
-            setLoading(false);
-        }
 
-    };
+    } finally {
+        setLoading(false);
+    }
+};
 
 
     return(

@@ -27,43 +27,88 @@ function Register() {
     };
 
     const registerUser = async (e) => {
-        e.preventDefault();
+    e.preventDefault();
 
-        setError("");
-        setSuccess("");
-        setLoading(true);
+    setError("");
+    setSuccess("");
 
-        try {
-            const response = await API.post(
-                "/auth/register",
-                user
-            );
+    // Frontend validation
+    if (!user.fullName.trim()) {
+        setError("Please enter your full name.");
+        return;
+    }
 
-            console.log("Registration response:", response.data);
+    if (!user.email.trim()) {
+        setError("Please enter your email.");
+        return;
+    }
 
-            setSuccess("Account created successfully!");
+    if (!user.password.trim()) {
+        setError("Please enter a password.");
+        return;
+    }
 
-            setUser({
-                fullName: "",
-                email: "",
-                password: ""
-            });
+    if (user.password.length < 8) {
+        setError("Password must contain at least 8 characters.");
+        return;
+    }
 
-        } catch (error) {
-            console.error("Registration error:", error);
+    setLoading(true);
 
-            if (error.response) {
+    try {
+        const response = await API.post("/auth/register", {
+            fullName: user.fullName.trim(),
+            email: user.email.trim(),
+            password: user.password
+        });
+
+        console.log("Registration response:", response.data);
+
+        setSuccess("Account created successfully!");
+
+        setUser({
+            fullName: "",
+            email: "",
+            password: ""
+        });
+
+        setShowPassword(false);
+
+    } catch (error) {
+        console.error("Registration error:", error);
+
+        if (error.response) {
+            const status = error.response.status;
+
+            if (status === 409) {
+                setError("An account with this email already exists.");
+            } else if (status === 400) {
+                setError(
+                    error.response.data?.message ||
+                    "Please check your registration details."
+                );
+            } else if (status >= 500) {
+                setError("Server error. Please try again later.");
+            } else {
                 setError(
                     error.response.data?.message ||
                     "Registration failed. Please try again."
                 );
-            } else {
-                setError("Unable to connect to the server");
             }
-        } finally {
-            setLoading(false);
+
+        } else if (error.request) {
+            setError(
+                "Unable to connect to the server. Please check your connection and try again."
+            );
+
+        } else {
+            setError("Something went wrong. Please try again.");
         }
-    };
+
+    } finally {
+        setLoading(false);
+    }
+};
 
     return (
         <div className="auth-page">

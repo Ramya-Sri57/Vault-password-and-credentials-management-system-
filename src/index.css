@@ -109,3 +109,106 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+/* =========================================
+   GLOBAL RESPONSIVE FIXES
+========================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+}
+
+#root {
+  width: 100%;
+  max-width: 1126px;
+  min-height: 100svh;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* Prevent media and form elements from overflowing */
+
+img,
+svg,
+video {
+  max-width: 100%;
+}
+
+input,
+select,
+textarea,
+button {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 1024px) {
+
+  #root {
+    width: 100%;
+    border-inline: none;
+  }
+
+  h1 {
+    font-size: 36px;
+  }
+
+  h2 {
+    font-size: 22px;
+  }
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 768px) {
+
+  #root {
+    width: 100%;
+    min-width: 0;
+    border: none;
+  }
+
+  h1 {
+    font-size: 30px;
+    letter-spacing: -0.8px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+}
+
+/* =========================================
+   SMALL MOBILE
+========================================= */
+
+@media (max-width: 480px) {
+
+  h1 {
+    font-size: 26px;
+  }
+
+  h2 {
+    font-size: 18px;
+  }
+}

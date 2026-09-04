@@ -27,41 +27,73 @@ function Login() {
     };
 
     const loginUser = async (e) => {
-        e.preventDefault();
+    e.preventDefault();
 
-        setError("");
-        setSuccess("");
-        setLoading(true);
+    setError("");
+    setSuccess("");
 
-        try {
-            const response = await API.post("/auth/login", user);
+    // Frontend validation
+    if (!user.email.trim() || !user.password.trim()) {
+        setError("Please enter both email and password.");
+        return;
+    }
 
-            console.log("Login response:", response.data);
+    setLoading(true);
 
-localStorage.setItem("token", response.data.token);
-console.log("TOKEN SAVED:", localStorage.getItem("token"));
+try {
+    const response = await API.post("/auth/login", {
+        email: user.email.trim(),
+        password: user.password
+    });
 
-toast.success("Login successful!");
+    localStorage.setItem("token", response.data.token);
+    console.log("TOKEN SAVED:", localStorage.getItem("token"));
+        console.log("Login response:", response.data);
 
-setTimeout(() => {
-    navigate("/dashboard");
-}, 1000);
+        // Store JWT token
+        localStorage.setItem("token", response.data.token);
 
-        } catch (error) {
-            console.error("Login error:", error);
+        toast.success("Login successful!");
 
-            if (error.response) {
+        setTimeout(() => {
+            navigate("/dashboard");
+        }, 1000);
+
+    } catch (error) {
+        console.error("Login error:", error);
+
+        if (error.response) {
+            const status = error.response.status;
+
+            if (status === 401 || status === 403) {
+                setError("Invalid email or password.");
+            } else if (status === 400) {
                 setError(
                     error.response.data?.message ||
-                    "Invalid email or password"
+                    "Please check your email and password."
                 );
+            } else if (status >= 500) {
+                setError("Server error. Please try again later.");
             } else {
-                setError("Unable to connect to the server");
+                setError(
+                    error.response.data?.message ||
+                    "Login failed. Please try again."
+                );
             }
-        } finally {
-            setLoading(false);
+
+        } else if (error.request) {
+            setError(
+                "Unable to connect to the server. Please check your connection and try again."
+            );
+
+        } else {
+            setError("Something went wrong. Please try again.");
         }
-    };
+
+    } finally {
+        setLoading(false);
+    }
+};
 
     return (
         <div className="auth-page">

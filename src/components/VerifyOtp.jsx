@@ -27,16 +27,33 @@ function VerifyOtp() {
 }, [timer]);
 
     const verifyOtp = async (e) => {
-
     e.preventDefault();
+
+    const enteredOtp = otp.trim();
+
+    // Frontend validation
+    if (!email) {
+        toast.error("Email information is missing. Please start again.");
+        navigate("/forgot-password");
+        return;
+    }
+
+    if (!enteredOtp) {
+        toast.error("Please enter the OTP.");
+        return;
+    }
+
+    if (!/^\d{6}$/.test(enteredOtp)) {
+        toast.error("Please enter a valid 6-digit OTP.");
+        return;
+    }
 
     setLoading(true);
 
     try {
-
         await API.post("/auth/verify-otp", {
             email,
-            otp
+            otp: enteredOtp
         });
 
         toast.success("OTP verified successfully!");
@@ -44,17 +61,55 @@ function VerifyOtp() {
         setVerified(true);
 
     } catch (error) {
+        console.error("OTP verification error:", error);
 
-        toast.error(
-            error.response?.data || "Invalid OTP"
-        );
+        if (error.response) {
+            const status = error.response.status;
+
+            if (status === 400) {
+                toast.error(
+                    error.response.data?.message ||
+                    error.response.data ||
+                    "Invalid or expired OTP."
+                );
+
+            } else if (status === 404) {
+                toast.error(
+                    "No account found for this email address."
+                );
+
+            } else if (status === 429) {
+                toast.error(
+                    "Too many verification attempts. Please try again later."
+                );
+
+            } else if (status >= 500) {
+                toast.error(
+                    "Server error. Unable to verify OTP. Please try again later."
+                );
+
+            } else {
+                toast.error(
+                    error.response.data?.message ||
+                    error.response.data ||
+                    "Unable to verify OTP."
+                );
+            }
+
+        } else if (error.request) {
+            toast.error(
+                "Unable to connect to the server. Please try again."
+            );
+
+        } else {
+            toast.error(
+                "Something went wrong. Please try again."
+            );
+        }
 
     } finally {
-
         setLoading(false);
-
     }
-
 };
     if (verified) {
 
@@ -111,12 +166,17 @@ function VerifyOtp() {
                 <form onSubmit={verifyOtp}>
 
                     <input
-                        type="text"
-                        placeholder="Enter OTP"
-                        value={otp}
-                        onChange={(e) => setOtp(e.target.value)}
-                        required
-                    />
+    type="text"
+    placeholder="Enter OTP"
+    value={otp}
+    maxLength={6}
+    inputMode="numeric"
+    onChange={(e) => {
+        const value = e.target.value.replace(/\D/g, "");
+        setOtp(value);
+    }}
+    required
+/>
 
                    <button
     type="submit"
@@ -132,22 +192,73 @@ function VerifyOtp() {
     className="secondary-btn"
     onClick={async () => {
 
-        try {
+    if (!email) {
+        toast.error("Email information is missing. Please start again.");
+        navigate("/forgot-password");
+        return;
+    }
 
-            await API.post("/auth/forgot-password", {
-                email
-            });
+    try {
 
-           toast.success("OTP sent successfully!");
-            setTimer(30);
+        await API.post("/auth/forgot-password", {
+            email
+        });
 
-        } catch {
+        toast.success("OTP sent successfully!");
+        setTimer(30);
 
-            toast.error("Unable to resend OTP.");
+    } catch (error) {
 
+        console.error("Resend OTP error:", error);
+
+        if (error.response) {
+
+            const status = error.response.status;
+
+            if (status === 400) {
+                toast.error(
+                    error.response.data?.message ||
+                    error.response.data ||
+                    "Invalid email address."
+                );
+
+            } else if (status === 404) {
+                toast.error(
+                    "No account found with this email address."
+                );
+
+            } else if (status === 429) {
+                toast.error(
+                    "Too many OTP requests. Please try again later."
+                );
+
+            } else if (status >= 500) {
+                toast.error(
+                    "Server error. Unable to resend OTP."
+                );
+
+            } else {
+                toast.error(
+                    error.response.data?.message ||
+                    error.response.data ||
+                    "Unable to resend OTP."
+                );
+            }
+
+        } else if (error.request) {
+
+            toast.error(
+                "Unable to connect to the server. Please try again."
+            );
+
+        } else {
+
+            toast.error(
+                "Something went wrong. Please try again."
+            );
         }
-
-    }}
+    }
+}}
 >
 
 {
