@@ -1,5 +1,5 @@
 package com.passwordvault.backend.service;
-
+import com.passwordvault.backend.exception.UnauthorizedException;
 import com.passwordvault.backend.dto.AuthResponse;
 import com.passwordvault.backend.dto.LoginRequest;
 import com.passwordvault.backend.dto.RegisterRequest;
@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.passwordvault.backend.security.JwtService;
-
+import com.passwordvault.backend.exception.ConflictException;
 import java.util.Optional;
 
 @Service
@@ -27,9 +27,9 @@ public class AuthService {
         Optional<User> existingUser =
                 userRepository.findByEmail(request.getEmail());
 
-        if (existingUser.isPresent()) {
-            throw new RuntimeException("Email already exists");
-        }
+       if (existingUser.isPresent()) {
+    throw new ConflictException("An account with this email already exists.");
+}
 
         String encryptedPassword =
                 passwordEncoder.encode(request.getPassword());
@@ -64,7 +64,7 @@ public class AuthService {
                     "FAILED"
             );
 
-            throw new RuntimeException("User not found");
+           throw new UnauthorizedException("Invalid email or password.");
         }
 
         User user = userOptional.get();
@@ -81,7 +81,7 @@ public class AuthService {
                     "FAILED"
             );
 
-            throw new RuntimeException("Invalid Password");
+           throw new UnauthorizedException("Invalid email or password.");
         }
 
         // Password is correct

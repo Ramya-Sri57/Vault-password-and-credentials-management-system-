@@ -1,5 +1,5 @@
 package com.passwordvault.backend.service;
-
+import com.passwordvault.backend.exception.ResourceNotFoundException;
 import com.passwordvault.backend.entity.Credential;
 import com.passwordvault.backend.entity.User;
 import com.passwordvault.backend.repository.CredentialRepository;
@@ -86,13 +86,9 @@ public class CredentialService {
     Optional<Credential> existingCredential =
             credentialRepository.findById(id);
 
-    if (existingCredential.isEmpty()) {
-
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body("Credential not found");
-    }
-
+   if (existingCredential.isEmpty()) {
+    throw new ResourceNotFoundException("Credential not found");
+}
     Credential credential = existingCredential.get();
 
     // Owner can always view
@@ -142,11 +138,8 @@ public class CredentialService {
             credentialRepository.findById(id);
 
     if (existingCredential.isEmpty()) {
-
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body("Credential not found");
-    }
+    throw new ResourceNotFoundException("Credential not found");
+}
 
     Credential credential = existingCredential.get();
 
@@ -207,13 +200,9 @@ public class CredentialService {
 
 
 
-        if(existingCredential.isEmpty()) {
-
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("Credential not found");
-
-        }
+       if (existingCredential.isEmpty()) {
+    throw new ResourceNotFoundException("Credential not found");
+}
 
 
 

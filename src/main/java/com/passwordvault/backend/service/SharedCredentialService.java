@@ -13,6 +13,10 @@ import com.passwordvault.backend.dto.SharedCredentialResponse;
 import java.util.stream.Collectors;
 import java.util.List;
 import com.passwordvault.backend.security.EncryptionService;
+import com.passwordvault.backend.exception.BadRequestException;
+import com.passwordvault.backend.exception.ConflictException;
+import com.passwordvault.backend.exception.ResourceNotFoundException;
+import com.passwordvault.backend.exception.UnauthorizedException;
 @Service
 @RequiredArgsConstructor
 public class SharedCredentialService {
@@ -29,8 +33,8 @@ public void shareCredential(
     Credential credential = credentialRepository
             .findById(request.getCredentialId())
             .orElseThrow(() ->
-                    new RuntimeException("Credential not found.")
-            );
+        new ResourceNotFoundException("Credential not found.")
+);
 
     // Owner always has permission to manage sharing
 boolean isOwner =
@@ -51,24 +55,26 @@ if (!isOwner) {
     if (existingAccess == null ||
             existingAccess.getAccessLevel() != AccessLevel.FULL_ACCESS) {
 
-        throw new RuntimeException(
-                "You do not have permission to manage sharing for this credential."
-        );
+       throw new UnauthorizedException(
+        "You do not have permission to manage sharing for this credential."
+);
     }
 }
 
     // Find recipient by email
-    User recipient = userRepository
-            .findByEmail(request.getEmail())
-            .orElseThrow(() ->
-                    new RuntimeException("User not found.")
-            );
+   User recipient = userRepository
+        .findByEmail(request.getEmail())
+        .orElseThrow(() ->
+                new ResourceNotFoundException(
+                        "Recipient user not found."
+                )
+        );
 
     // Prevent sharing with yourself
     if (recipient.getId().equals(owner.getId())) {
-        throw new RuntimeException(
-                "You cannot share with yourself."
-        );
+        throw new BadRequestException(
+        "You cannot share a credential with yourself."
+);
     }
 
     // Prevent duplicate sharing
@@ -79,9 +85,9 @@ if (!isOwner) {
             )
             .isPresent()) {
 
-        throw new RuntimeException(
-                "Credential already shared with this user."
-        );
+        throw new ConflictException(
+        "Credential is already shared with this user."
+);
     }
 
     // Save sharing
@@ -176,9 +182,9 @@ public List<SharedCredentialResponse> getUsersWithAccess(
                 currentUserAccess.getAccessLevel()
                         != AccessLevel.FULL_ACCESS) {
 
-            throw new RuntimeException(
-                    "You do not have permission to manage sharing."
-            );
+            throw new UnauthorizedException(
+        "You do not have permission to manage sharing."
+);
         }
     }
 
@@ -212,10 +218,10 @@ public void revokeAccess(Long shareId, User owner) {
             sharedCredentialRepository
                     .findById(shareId)
                     .orElseThrow(() ->
-                            new RuntimeException(
-                                    "Shared credential not found."
-                            )
-                    );
+        new ResourceNotFoundException(
+                "Shared credential not found."
+        )
+);
 
    // Owner always has permission to revoke
 boolean isOwner =
@@ -274,9 +280,9 @@ public void checkEditPermission(
             (access.getAccessLevel() != AccessLevel.EDIT &&
              access.getAccessLevel() != AccessLevel.FULL_ACCESS)) {
 
-        throw new RuntimeException(
-                "You do not have permission to edit this credential."
-        );
+       throw new UnauthorizedException(
+        "You do not have permission to edit this credential."
+);
     }
 }
 }

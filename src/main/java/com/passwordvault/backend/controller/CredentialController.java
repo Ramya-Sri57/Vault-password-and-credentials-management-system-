@@ -10,7 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
 import org.springframework.web.bind.annotation.PutMapping;
-
+import com.passwordvault.backend.dto.CredentialRequest;
+import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/credentials")
 @RequiredArgsConstructor
@@ -19,17 +20,25 @@ public class CredentialController {
 
     private final CredentialService credentialService;
 
-    @PostMapping
-    public Credential saveCredential(
-            Authentication authentication,
-            @RequestBody Credential credential
-    ) {
+   @PostMapping
+public Credential saveCredential(
+        Authentication authentication,
+        @Valid @RequestBody CredentialRequest request
+) {
 
-        User user = (User) authentication.getPrincipal();
+    User user = (User) authentication.getPrincipal();
 
-        return credentialService.save(credential, user);
+    Credential credential = new Credential();
 
-    }
+    credential.setWebsite(request.getWebsite());
+    credential.setUsername(request.getUsername());
+    credential.setPassword(request.getPassword());
+    credential.setNotes(request.getNotes());
+    credential.setCategory(request.getCategory());
+    credential.setExpiryDate(request.getExpiryDate());
+
+    return credentialService.save(credential, user);
+}
 
     @GetMapping
     public List<Credential> getCredentials(
@@ -74,17 +83,25 @@ public ResponseEntity<?> deleteCredential(
     return credentialService.delete(id, user);
 
 }
-    @PutMapping("/{id}")
+   @PutMapping("/{id}")
 public ResponseEntity<?> updateCredential(
         @PathVariable Long id,
-        @RequestBody Credential credential,
+        @Valid @RequestBody CredentialRequest request,
         Authentication authentication
 ) {
 
     User user = (User) authentication.getPrincipal();
 
-    return credentialService.updateCredential(id, credential, user);
+    Credential credential = new Credential();
 
+    credential.setWebsite(request.getWebsite());
+    credential.setUsername(request.getUsername());
+    credential.setPassword(request.getPassword());
+    credential.setNotes(request.getNotes());
+    credential.setCategory(request.getCategory());
+    credential.setExpiryDate(request.getExpiryDate());
+
+    return credentialService.updateCredential(id, credential, user);
 }
 
 }
