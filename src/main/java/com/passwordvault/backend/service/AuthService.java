@@ -52,10 +52,10 @@ public class AuthService {
     // Login
     public AuthResponse login(LoginRequest request) {
 
+    try {
         Optional<User> userOptional =
                 userRepository.findByEmail(request.getEmail());
 
-        // User does not exist
         if (userOptional.isEmpty()) {
 
             loginActivityService.recordLogin(
@@ -64,12 +64,13 @@ public class AuthService {
                     "FAILED"
             );
 
-           throw new UnauthorizedException("Invalid email or password.");
+            throw new UnauthorizedException(
+                    "Invalid email or password."
+            );
         }
 
         User user = userOptional.get();
 
-        // Password is incorrect
         if (!passwordEncoder.matches(
                 request.getPassword(),
                 user.getPassword()
@@ -81,22 +82,30 @@ public class AuthService {
                     "FAILED"
             );
 
-           throw new UnauthorizedException("Invalid email or password.");
+            throw new UnauthorizedException(
+                    "Invalid email or password."
+            );
         }
 
-        // Password is correct
         loginActivityService.recordLogin(
                 user,
                 request.getEmail(),
                 "SUCCESS"
         );
 
-        // Generate JWT
-        String token = jwtService.generateToken(user.getEmail());
+        String token =
+                jwtService.generateToken(user.getEmail());
 
         return new AuthResponse(
                 "Login Successful",
                 token
         );
+
+    } catch (Exception e) {
+
+        System.out.println("========== LOGIN ERROR ==========");
+        e.printStackTrace();
+
+        throw e;
     }
 }
