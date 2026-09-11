@@ -29,13 +29,25 @@ const [newAccessLevel, setNewAccessLevel] = useState("VIEW");
 
         console.log("Shared credentials:", response.data);
 
-        setSharedCredentials(response.data);
+        let data = [];
+
+        if (Array.isArray(response.data)) {
+            data = response.data;
+        } else if (Array.isArray(response.data?.sharedCredentials)) {
+            data = response.data.sharedCredentials;
+        } else if (Array.isArray(response.data?.data)) {
+            data = response.data.data;
+        }
+
+        setSharedCredentials(data);
 
     } catch (error) {
         console.error(
             "Failed to fetch shared credentials:",
             error
         );
+
+        setSharedCredentials([]);
 
         if (error.response) {
             const status = error.response.status;
@@ -95,11 +107,21 @@ const [newAccessLevel, setNewAccessLevel] = useState("VIEW");
         setShowManageModal(true);
         setLoadingUsers(true);
 
-        const response = await API.get(
-            `/share/${item.credentialId}/users`
-        );
+       const response = await API.get(
+    `/share/${item.credentialId}/users`
+);
 
-        setUsersWithAccess(response.data);
+let data = [];
+
+if (Array.isArray(response.data)) {
+    data = response.data;
+} else if (Array.isArray(response.data?.users)) {
+    data = response.data.users;
+} else if (Array.isArray(response.data?.data)) {
+    data = response.data.data;
+}
+
+setUsersWithAccess(data);
 
     } catch (error) {
         console.error("Failed to load sharing details:", error);
@@ -691,12 +713,20 @@ if (!emailPattern.test(recipientEmail)) {
                             setNewShareEmail("");
 
                             const response = await API.get(
-                                `/share/${manageCredential.credentialId}/users`
-                            );
+    `/share/${manageCredential.credentialId}/users`
+);
 
-                            setUsersWithAccess(
-                                response.data
-                            );
+let data = [];
+
+if (Array.isArray(response.data)) {
+    data = response.data;
+} else if (Array.isArray(response.data?.users)) {
+    data = response.data.users;
+} else if (Array.isArray(response.data?.data)) {
+    data = response.data.data;
+}
+
+setUsersWithAccess(data);
 
                         } catch (error) {
 

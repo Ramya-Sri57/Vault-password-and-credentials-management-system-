@@ -3,14 +3,17 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const TIMEOUT = 15 * 60 * 1000; // 15 minutes
-// For testing you can temporarily use:
-// const TIMEOUT = 60 * 1000; // 1 minute
 
 function SessionTimeout() {
 
     const navigate = useNavigate();
 
     useEffect(() => {
+
+        // Do nothing if the user is not logged in
+        if (!localStorage.getItem("token")) {
+            return;
+        }
 
         let timer;
 
@@ -28,7 +31,10 @@ function SessionTimeout() {
 
             clearTimeout(timer);
 
-            timer = setTimeout(logout, TIMEOUT);
+            // Check again before starting the timer
+            if (localStorage.getItem("token")) {
+                timer = setTimeout(logout, TIMEOUT);
+            }
 
         };
 

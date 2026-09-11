@@ -38,14 +38,24 @@ const fetchCredentials = async () => {
     try {
         const response = await API.get("/credentials");
 
-        setCredentials(response.data);
+        let data = [];
 
-        response.data.forEach(item => {
+        if (Array.isArray(response.data)) {
+            data = response.data;
+        } else if (Array.isArray(response.data?.credentials)) {
+            data = response.data.credentials;
+        }
+
+        setCredentials(data);
+
+        data.forEach(item => {
             console.log(item.website, item.category);
         });
 
     } catch (error) {
         console.error("Fetch credentials error:", error);
+
+        setCredentials([]);
 
         if (error.response) {
             const status = error.response.status;
@@ -59,7 +69,6 @@ const fetchCredentials = async () => {
                 navigate("/login");
 
             } else if (status === 404) {
-                setCredentials([]);
                 toast.error("No saved credentials were found.");
 
             } else if (status >= 500) {

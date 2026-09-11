@@ -46,19 +46,22 @@ try {
         password: user.password
     });
 
+    console.log("LOGIN RESPONSE:", response.data);
+    console.log("TOKEN FIELD:", response.data.token);
+
+    // Save JWT token
     localStorage.setItem("token", response.data.token);
-    console.log("TOKEN SAVED:", localStorage.getItem("token"));
-        console.log("Login response:", response.data);
 
-        // Store JWT token
-        localStorage.setItem("token", response.data.token);
+    console.log(
+        "TOKEN SAVED:",
+        localStorage.getItem("token")
+    );
 
-        toast.success("Login successful!");
+    toast.success("Login successful!");
 
-        setTimeout(() => {
-            navigate("/dashboard");
-        }, 1000);
-
+    setTimeout(() => {
+        navigate("/dashboard");
+    }, 1000);
     } catch (error) {
         console.error("Login error:", error);
 

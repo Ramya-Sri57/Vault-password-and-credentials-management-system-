@@ -20,39 +20,40 @@ function SharedByMe() {
     }, []);
 
     const fetchSharedByMe = async () => {
+    try {
+        const response = await API.get("/share/shared-by-me");
 
-        try {
+        console.log("Shared By Me:", response.data);
 
-            const response = await API.get(
-                "/share/shared-by-me"
-            );
+        let data = [];
 
-            console.log(
-                "Shared By Me:",
-                response.data
-            );
-
-            setSharedCredentials(response.data);
-
-        } catch (error) {
-
-            console.error(
-                "Failed to fetch shared credentials:",
-                error
-            );
-
-            setError(
-                "Unable to load shared credentials."
-            );
-
-        } finally {
-
-            setLoading(false);
-
+        if (Array.isArray(response.data)) {
+            data = response.data;
+        } else if (Array.isArray(response.data?.sharedCredentials)) {
+            data = response.data.sharedCredentials;
+        } else if (Array.isArray(response.data?.data)) {
+            data = response.data.data;
         }
 
-    };
+        setSharedCredentials(data);
 
+    } catch (error) {
+        console.error(
+            "Failed to fetch shared credentials:",
+            error
+        );
+
+        setSharedCredentials([]);
+
+        setError(
+            error.response?.data?.message ||
+            "Unable to load shared credentials."
+        );
+
+    } finally {
+        setLoading(false);
+    }
+};
 
     const togglePassword = (shareId) => {
 
