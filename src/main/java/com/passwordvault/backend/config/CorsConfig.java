@@ -19,11 +19,12 @@ public class CorsConfig {
                 new CorsConfiguration();
 
         configuration.setAllowedOrigins(
-                List.of(
-                        "http://localhost:5173",
-                        "http://localhost:5175"
-                )
-        );
+        List.of(
+                "http://localhost:5173",
+                "http://localhost:5175",
+                "https://vault-password-and-credentials-mana.vercel.app"
+        )
+);
 
         configuration.setAllowedMethods(
                 List.of(
