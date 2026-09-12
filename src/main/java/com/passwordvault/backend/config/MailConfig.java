@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
+import java.util.Properties;
+
 @Configuration
 public class MailConfig {
 
@@ -19,15 +21,15 @@ public class MailConfig {
         mailSender.setUsername(System.getenv("MAIL_USERNAME"));
         mailSender.setPassword(System.getenv("MAIL_PASSWORD"));
 
-        mailSender.getJavaMailProperties().put(
-                "mail.smtp.auth",
-                "true"
-        );
+        Properties props = mailSender.getJavaMailProperties();
 
-        mailSender.getJavaMailProperties().put(
-                "mail.smtp.starttls.enable",
-                "true"
-        );
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+
+        // Prevent SMTP from hanging for a long time
+        props.put("mail.smtp.connectiontimeout", "10000");
+        props.put("mail.smtp.timeout", "10000");
+        props.put("mail.smtp.writetimeout", "10000");
 
         return mailSender;
     }
