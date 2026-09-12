@@ -24,41 +24,55 @@ public class PasswordResetService {
 
    @Transactional
 public void generateAndSendOtp(String email) {
-        // Check whether the user exists
-        boolean userExists = userRepository.findByEmail(email).isPresent();
 
-       if (!userExists) {
-    throw new ResourceNotFoundException("No account found with this email.");
-}
+    System.out.println("========== FORGOT PASSWORD START ==========");
+    System.out.println("Email received: " + email);
 
-        // Remove any previous OTP for this email
-        otpRepository.deleteByEmail(email);
+    boolean userExists = userRepository.findByEmail(email).isPresent();
 
-        // Generate a 6-digit OTP
-        String otp = String.valueOf(
-                ThreadLocalRandom.current().nextInt(100000, 1000000)
+    System.out.println("User exists: " + userExists);
+
+    if (!userExists) {
+        throw new ResourceNotFoundException(
+                "No account found with this email."
         );
-
-        // Create OTP record
-        PasswordResetOtp passwordResetOtp = new PasswordResetOtp();
-
-        passwordResetOtp.setEmail(email);
-        passwordResetOtp.setOtp(otp);
-        passwordResetOtp.setExpiryTime(
-                LocalDateTime.now().plusMinutes(5)
-        );
-        passwordResetOtp.setVerified(false);
-
-        // Save OTP in database
-        otpRepository.save(passwordResetOtp);
-
-        // Send OTP to user's email
-System.out.println("========== BEFORE SENDING OTP EMAIL ==========");
-
-emailService.sendOtpEmail(email, otp);
-
-System.out.println("========== AFTER SENDING OTP EMAIL ==========");
     }
+
+    System.out.println("Deleting old OTP...");
+
+    otpRepository.deleteByEmail(email);
+
+    System.out.println("Generating new OTP...");
+
+    String otp = String.valueOf(
+            ThreadLocalRandom.current().nextInt(100000, 1000000)
+    );
+
+    System.out.println("OTP generated successfully.");
+
+    PasswordResetOtp passwordResetOtp = new PasswordResetOtp();
+
+    passwordResetOtp.setEmail(email);
+    passwordResetOtp.setOtp(otp);
+    passwordResetOtp.setExpiryTime(
+            LocalDateTime.now().plusMinutes(5)
+    );
+    passwordResetOtp.setVerified(false);
+
+    System.out.println("Saving OTP...");
+
+    otpRepository.save(passwordResetOtp);
+
+    System.out.println("OTP saved successfully.");
+
+    System.out.println("========== BEFORE SENDING OTP EMAIL ==========");
+
+    emailService.sendOtpEmail(email, otp);
+
+    System.out.println("========== AFTER SENDING OTP EMAIL ==========");
+
+    System.out.println("========== FORGOT PASSWORD END ==========");
+}
     public void verifyOtp(String email, String otp) {
 
     PasswordResetOtp resetOtp = otpRepository.findByEmail(email)
