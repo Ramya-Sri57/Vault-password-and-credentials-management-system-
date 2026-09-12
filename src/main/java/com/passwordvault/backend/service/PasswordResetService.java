@@ -53,7 +53,11 @@ public void generateAndSendOtp(String email) {
         otpRepository.save(passwordResetOtp);
 
         // Send OTP to user's email
-        emailService.sendOtpEmail(email, otp);
+System.out.println("========== BEFORE SENDING OTP EMAIL ==========");
+
+emailService.sendOtpEmail(email, otp);
+
+System.out.println("========== AFTER SENDING OTP EMAIL ==========");
     }
     public void verifyOtp(String email, String otp) {
 
