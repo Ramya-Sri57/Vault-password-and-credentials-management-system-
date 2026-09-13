@@ -1,35 +1,67 @@
 package com.passwordvault.backend.service;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import okhttp3.*;
+
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+
 @Service
-@RequiredArgsConstructor
 public class EmailService {
 
-    private final JavaMailSender mailSender;
+    private final OkHttpClient client = new OkHttpClient();
 
     public void sendOtpEmail(String toEmail, String otp) {
 
-        SimpleMailMessage message = new SimpleMailMessage();
+        String apiKey = System.getenv("RESEND_API_KEY");
 
-        message.setTo(toEmail);
-        message.setSubject("Password Vault - Password Reset OTP");
+        if (apiKey == null || apiKey.isBlank()) {
+            throw new RuntimeException("RESEND_API_KEY is not configured.");
+        }
 
-        message.setText(
-                "Hello,\n\n"
-                        + "Your Password Vault password reset OTP is: "
-                        + otp
-                        + "\n\n"
-                        + "This OTP is valid for 5 minutes.\n\n"
-                        + "If you did not request a password reset, "
-                        + "please ignore this email.\n\n"
-                        + "Regards,\n"
-                        + "Password Vault Team"
+        String json = """
+                {
+                  "from": "onboarding@resend.dev",
+                  "to": ["%s"],
+                  "subject": "Password Vault - Password Reset OTP",
+                  "text": "Hello,\\n\\nYour Password Vault password reset OTP is: %s\\n\\nThis OTP is valid for 5 minutes.\\n\\nIf you did not request a password reset, please ignore this email.\\n\\nRegards,\\nPassword Vault Team"
+                }
+                """.formatted(toEmail, otp);
+
+        RequestBody body = RequestBody.create(
+                json,
+                MediaType.parse("application/json")
         );
 
-        mailSender.send(message);
+        Request request = new Request.Builder()
+                .url("https://api.resend.com/emails")
+                .post(body)
+                .addHeader("Authorization", "Bearer " + apiKey)
+                .addHeader("Content-Type", "application/json")
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+
+            if (!response.isSuccessful()) {
+                String errorBody =
+                        response.body() != null
+                                ? response.body().string()
+                                : "No response body";
+
+                throw new RuntimeException(
+                        "Resend email failed: " + errorBody
+                );
+            }
+
+            System.out.println(
+                    "========== OTP EMAIL SENT SUCCESSFULLY =========="
+            );
+
+        } catch (IOException e) {
+            throw new RuntimeException(
+                    "Unable to connect to Resend email service.",
+                    e
+            );
+        }
     }
 }
